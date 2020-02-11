@@ -4,11 +4,9 @@
 #include <iostream>
 void test_create(std::string path_in)
 {
-    std::string path_out = "./bar";
-    TraceWriter tw(path_out);
     std::cout << path_in.c_str() << '\n';
-    TraceReader tr(path_in, tw);
-    tr.read();
+    // TraceReader tr(path_in);
+    // tr.read_events();
 }
 
 int main(int argc, char * argv[])

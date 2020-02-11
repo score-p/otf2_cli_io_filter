@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
 
-#include <trace_reader.hpp>
+#include "trace_reader.hpp"
 
 static OTF2_CallbackCode
 Enter_print( OTF2_LocationRef    location,
@@ -26,8 +26,8 @@ LocationCb(void*                 userData,
            uint64_t              numberOfEvents,
            OTF2_LocationGroupRef locationGroup);
 
-TraceReader::TraceReader(const std::string &path, const Otf2Writer & writer)
-:m_writer(writer),
+TraceReader::TraceReader(const std::string &path, TraceFilter & filter)
+:m_filter(filter),
 m_reader(OTF2_Reader_Open(path.c_str()), OTF2_Reader_Close),
 m_global_event_reader(nullptr,
                       [this](OTF2_GlobalEvtReader *reader){
@@ -75,13 +75,8 @@ m_location_count(0)
     OTF2_GlobalEvtReaderCallbacks_Delete(event_callbacks);
 }
 
-void TraceReader::read()
-{
-    read_events();
-}
-
 void
-TraceReader::read_events()
+TraceReader::read()
 {
     uint64_t events_read = 0;
     OTF2_Reader_ReadAllGlobalEvents(m_reader.get(),
