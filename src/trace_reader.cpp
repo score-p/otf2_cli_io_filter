@@ -3,31 +3,8 @@
 
 #include "trace_reader.hpp"
 
-static OTF2_CallbackCode
-Enter_print( OTF2_LocationRef    location,
-             OTF2_TimeStamp      time,
-             void*               userData,
-             OTF2_AttributeList* attributes,
-             OTF2_RegionRef      region )
-{
-    return OTF2_CALLBACK_SUCCESS;
-}
-
-static OTF2_CallbackCode
-StringCb(void *userData,
-         OTF2_StringRef self,
-         const char *string);
-
-OTF2_CallbackCode
-LocationCb(void*                 userData,
-           OTF2_LocationRef      location,
-           OTF2_StringRef        name,
-           OTF2_LocationType     locationType,
-           uint64_t              numberOfEvents,
-           OTF2_LocationGroupRef locationGroup);
-
-TraceReader::TraceReader(const std::string &path, TraceFilter & filter)
-:m_filter(filter),
+TraceReader::TraceReader(const std::string &path, Otf2Writer & writer)
+:m_writer(writer),
 m_reader(OTF2_Reader_Open(path.c_str()), OTF2_Reader_Close),
 m_global_event_reader(nullptr,
                       [this](OTF2_GlobalEvtReader *reader){
@@ -43,11 +20,20 @@ m_location_count(0)
     // TODO unique pointer
     OTF2_GlobalDefReaderCallbacks* def_callbacks = OTF2_GlobalDefReaderCallbacks_New();
     
+    OTF2_GlobalDefReaderCallbacks_SetSystemTreeNodeCallback(def_callbacks, 
+                                                            definition::SystemTreeNodeCb);
+
     OTF2_GlobalDefReaderCallbacks_SetLocationCallback(def_callbacks,
-                                                      &LocationCb);
+                                                      definition::LocationCb);
     
     OTF2_GlobalDefReaderCallbacks_SetStringCallback(def_callbacks,
-                                                    &StringCb);
+                                                    definition::StringCb);
+
+    OTF2_GlobalDefReaderCallbacks_SetLocationGroupCallback(def_callbacks, 
+                                                           definition::LocationGroupCb);
+
+    OTF2_GlobalDefReaderCallbacks_SetClockPropertiesCallback(def_callbacks, 
+                                                             definition::ClockPropertiesCb);
 
     OTF2_Reader_RegisterGlobalDefCallbacks(m_reader.get(),
                                            m_global_def_reader,
@@ -69,8 +55,8 @@ m_location_count(0)
                                            event_callbacks,
                                            this);
     
-    OTF2_GlobalEvtReaderCallbacks_SetEnterCallback(event_callbacks,
-                                                   &Enter_print );    
+    // OTF2_GlobalEvtReaderCallbacks_SetEnterCallback(event_callbacks,
+    //                                                &Enter_print );    
 
     OTF2_GlobalEvtReaderCallbacks_Delete(event_callbacks);
 }
@@ -123,32 +109,4 @@ TraceReader::read_definitions()
     {
         OTF2_Reader_CloseDefFiles(m_reader.get());
     }
-
-}
-
-OTF2_CallbackCode
-LocationCb(void*                 userData,
-           OTF2_LocationRef      location,
-           OTF2_StringRef        name,
-           OTF2_LocationType     locationType,
-           uint64_t              numberOfEvents,
-           OTF2_LocationGroupRef locationGroup)
-{
-    auto tr = static_cast<TraceReader *>(userData);
-    if (tr->m_locations.size() == tr->m_location_count)
-    {
-        return OTF2_CALLBACK_INTERRUPT;
-    }
-    tr->m_locations.push_back(location);
-    return OTF2_CALLBACK_SUCCESS;
-}
-
-OTF2_CallbackCode
-StringCb(void *userData,
-         OTF2_StringRef self,
-         const char *string)
-{
-    // auto tr = static_cast<TraceReader *>(userData);
-    // std::cout << "String " << string << '\n';
-    return OTF2_CALLBACK_SUCCESS;
-}
+}            

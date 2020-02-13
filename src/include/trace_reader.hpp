@@ -5,7 +5,8 @@
 #include <string>
 #include <functional>
 
-#include "trace_filter.hpp"
+#include "otf2_writer.hpp"
+#include "definition_callbacks.hpp"
 
 extern "C"
 {
@@ -19,15 +20,22 @@ using event_reader_ptr = std::unique_ptr<OTF2_GlobalEvtReader, event_reader_dele
 
 class TraceReader{
 public:
-    TraceReader(const std::string &path, TraceFilter & filter);
+    TraceReader(const std::string &path, Otf2Writer & writer);
 
     void
     read();
+
+    inline Otf2Writer &
+    writer()
+    {
+        return m_writer;
+    }
+
 private:
     void
     read_definitions();
-
-    TraceFilter m_filter;
+    
+    Otf2Writer & m_writer;
     reader_ptr m_reader;
     event_reader_ptr m_global_event_reader;
     OTF2_GlobalDefReader* m_global_def_reader;
@@ -35,12 +43,12 @@ private:
     std::vector<OTF2_LocationRef> m_locations;
 
     friend OTF2_CallbackCode
-    LocationCb(void*                 userData,
-               OTF2_LocationRef      location,
-               OTF2_StringRef        name,
-               OTF2_LocationType     locationType,
-               uint64_t              numberOfEvents,
-               OTF2_LocationGroupRef locationGroup);
+    definition::LocationCb(void*                 userData,
+                           OTF2_LocationRef      location,
+                           OTF2_StringRef        name,
+                           OTF2_LocationType     locationType,
+                           uint64_t              numberOfEvents,
+                           OTF2_LocationGroupRef locationGroup);
 };
 
 #endif /* TRACE_READER_H */
