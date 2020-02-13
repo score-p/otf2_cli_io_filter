@@ -4,7 +4,11 @@
 #include <otf2/otf2.h>
 
 class Otf2Writer{
-
+public:
+    virtual void
+    writeString (OTF2_StringRef self,
+		         const char *  	string) = 0;
+    
     virtual void
     writeClockProperties(uint64_t              timerResolution,
                          uint64_t              globalOffset,
@@ -28,6 +32,18 @@ class Otf2Writer{
                   OTF2_LocationType     locationType,
                   uint64_t              numberOfEvents,
                   OTF2_LocationGroupRef locationGroup ) = 0;
+
+    virtual void
+    writerEnterEvent(OTF2_LocationRef    location,
+                     OTF2_AttributeList * attributeList,
+		             OTF2_TimeStamp  	   time,
+		             OTF2_RegionRef  	   region) = 0;
+
+    virtual void
+    writerLeaveEvent(OTF2_LocationRef    location,
+                     OTF2_AttributeList * attributeList,
+		             OTF2_TimeStamp  	   time,
+		             OTF2_RegionRef  	   region) = 0;
 };
 
 #endif /* OTF2_WRITER_H */

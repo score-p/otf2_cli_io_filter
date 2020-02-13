@@ -96,3 +96,38 @@ void TraceWriter::writeLocation(OTF2_LocationRef self,
                                        numberOfEvents,
                                        locationGroup);
 }
+
+void
+TraceWriter::writeString (OTF2_StringRef self,
+		                  const char *  string)
+{
+    OTF2_GlobalDefWriter_WriteString(m_def_writer,
+                                     self,
+                                     string);
+}
+
+void
+TraceWriter::writerEnterEvent(OTF2_LocationRef    location,
+                              OTF2_AttributeList * attributeList,
+                              OTF2_TimeStamp  	   time,
+                              OTF2_RegionRef  	   region)
+{
+    auto writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
+    OTF2_EvtWriter_Enter(writer,
+                         attributeList,
+                         time,
+                         region);
+}
+
+void
+TraceWriter::writerLeaveEvent(OTF2_LocationRef    location,
+                              OTF2_AttributeList * attributeList,
+                              OTF2_TimeStamp  	   time,
+                              OTF2_RegionRef  	   region)
+{
+    auto writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
+    OTF2_EvtWriter_Leave(writer,
+                         attributeList,
+                         time,
+                         region);    
+}

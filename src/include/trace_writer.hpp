@@ -29,6 +29,10 @@ class TraceWriter: public Otf2Writer {
     virtual ~TraceWriter();
 
     virtual void
+    writeString (OTF2_StringRef self,
+		             const char *  	string);
+
+    virtual void
     writeClockProperties(uint64_t              timerResolution,
                          uint64_t              globalOffset,
                          uint64_t              traceLength );
@@ -51,6 +55,18 @@ class TraceWriter: public Otf2Writer {
                   OTF2_LocationType     locationType,
                   uint64_t              numberOfEvents,
                   OTF2_LocationGroupRef locationGroup );
+
+    virtual void
+    writerEnterEvent(OTF2_LocationRef    location,
+                     OTF2_AttributeList * attributeList,
+		                 OTF2_TimeStamp  	   time,
+		                 OTF2_RegionRef  	   region);
+
+    virtual void
+    writerLeaveEvent(OTF2_LocationRef    location,
+                     OTF2_AttributeList * attributeList,
+		                 OTF2_TimeStamp  	   time,
+		                 OTF2_RegionRef  	   region);
 
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;
