@@ -1,4 +1,9 @@
-add_executable(otf2_filter_io otf2_filter_io.cpp trace_writer.cpp trace_reader.cpp trace_filter.cpp)
+add_executable(otf2_filter_io otf2_filter_io.cpp 
+                              trace_writer.cpp
+                              trace_reader.cpp
+                              filtered_writer.cpp
+                              definition_callbacks.cpp
+                              event_callbacks.cpp)
 
 target_link_libraries(otf2_filter_io PUBLIC otf2::otf2)
 
