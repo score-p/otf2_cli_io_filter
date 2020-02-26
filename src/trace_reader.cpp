@@ -19,21 +19,155 @@ m_location_count(0)
     
     // TODO unique pointer
     OTF2_GlobalDefReaderCallbacks* def_callbacks = OTF2_GlobalDefReaderCallbacks_New();
-    
-    OTF2_GlobalDefReaderCallbacks_SetSystemTreeNodeCallback(def_callbacks, 
-                                                            definition::SystemTreeNodeCb);
 
-    OTF2_GlobalDefReaderCallbacks_SetLocationCallback(def_callbacks,
-                                                      definition::LocationCb);
-    
-    OTF2_GlobalDefReaderCallbacks_SetStringCallback(def_callbacks,
-                                                    definition::StringCb);
-
-    OTF2_GlobalDefReaderCallbacks_SetLocationGroupCallback(def_callbacks, 
-                                                           definition::LocationGroupCb);
 
     OTF2_GlobalDefReaderCallbacks_SetClockPropertiesCallback(def_callbacks, 
-                                                             definition::ClockPropertiesCb);
+                                                          definition::ClockPropertiesCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetParadigmCallback(def_callbacks, 
+                                                          definition::ParadigmCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetParadigmPropertyCallback(def_callbacks, 
+                                                          definition::ParadigmPropertyCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetIoParadigmCallback(def_callbacks, 
+                                                          definition::IoParadigmCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetStringCallback(def_callbacks, 
+                                                          definition::StringCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetAttributeCallback(def_callbacks, 
+                                                          definition::AttributeCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetSystemTreeNodeCallback(def_callbacks, 
+                                                          definition::SystemTreeNodeCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetLocationGroupCallback(def_callbacks, 
+                                                          definition::LocationGroupCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetLocationCallback(def_callbacks, 
+                                                          definition::LocationCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetRegionCallback(def_callbacks, 
+                                                          definition::RegionCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCallsiteCallback(def_callbacks, 
+                                                          definition::CallsiteCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCallpathCallback(def_callbacks, 
+                                                          definition::CallpathCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetGroupCallback(def_callbacks, 
+                                                          definition::GroupCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetMetricMemberCallback(def_callbacks, 
+                                                          definition::MetricMemberCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetMetricClassCallback(def_callbacks, 
+                                                          definition::MetricClassCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetMetricInstanceCallback(def_callbacks, 
+                                                          definition::MetricInstanceCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCommCallback(def_callbacks, 
+                                                          definition::CommCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetParameterCallback(def_callbacks, 
+                                                          definition::ParameterCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetRmaWinCallback(def_callbacks, 
+                                                          definition::RmaWinCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetMetricClassRecorderCallback(def_callbacks, 
+                                                          definition::MetricClassRecorderCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetSystemTreeNodePropertyCallback(def_callbacks, 
+                                                          definition::SystemTreeNodePropertyCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetSystemTreeNodeDomainCallback(def_callbacks, 
+                                                          definition::SystemTreeNodeDomainCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetLocationGroupPropertyCallback(def_callbacks, 
+                                                          definition::LocationGroupPropertyCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetLocationPropertyCallback(def_callbacks, 
+                                                          definition::LocationPropertyCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCartDimensionCallback(def_callbacks, 
+                                                          definition::CartDimensionCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCartTopologyCallback(def_callbacks, 
+                                                          definition::CartTopologyCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCartCoordinateCallback(def_callbacks, 
+                                                          definition::CartCoordinateCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetSourceCodeLocationCallback(def_callbacks, 
+                                                          definition::SourceCodeLocationCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCallingContextCallback(def_callbacks, 
+                                                          definition::CallingContextCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCallingContextPropertyCallback(def_callbacks, 
+                                                          definition::CallingContextPropertyCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetInterruptGeneratorCallback(def_callbacks, 
+                                                          definition::InterruptGeneratorCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetIoFilePropertyCallback(def_callbacks, 
+                                                          definition::IoFilePropertyCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetIoRegularFileCallback(def_callbacks, 
+                                                          definition::IoRegularFileCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetIoDirectoryCallback(def_callbacks, 
+                                                          definition::IoDirectoryCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetIoHandleCallback(def_callbacks, 
+                                                          definition::IoHandleCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetIoPreCreatedHandleStateCallback(def_callbacks, 
+                                                          definition::IoPreCreatedHandleStateCb);
+
+
+    OTF2_GlobalDefReaderCallbacks_SetCallpathParameterCallback(def_callbacks, 
+                                                          definition::CallpathParameterCb);
+
 
     OTF2_Reader_RegisterGlobalDefCallbacks(m_reader.get(),
                                            m_global_def_reader,
