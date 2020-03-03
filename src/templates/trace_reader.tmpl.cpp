@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "trace_reader.hpp"
+#include "event_callbacks.hpp"
 
 TraceReader::TraceReader(const std::string &path, Otf2Writer & writer)
 :m_writer(writer),
@@ -42,14 +43,18 @@ m_location_count(0)
     // TODO unique pointer
     OTF2_GlobalEvtReaderCallbacks* event_callbacks = OTF2_GlobalEvtReaderCallbacks_New();
 
+    @otf2 for event in events:
+
+    OTF2_GlobalEvtReaderCallbacks_Set@@event.name@@Callback(event_callbacks,
+                                                            event::@@event.name@@Cb);
+    
+    @otf2 endfor
+
     OTF2_Reader_RegisterGlobalEvtCallbacks(m_reader.get(),
                                            m_global_event_reader.get(),
                                            event_callbacks,
-                                           this);
+                                           this);    
     
-    // OTF2_GlobalEvtReaderCallbacks_SetEnterCallback(event_callbacks,
-    //                                                &Enter_print );    
-
     OTF2_GlobalEvtReaderCallbacks_Delete(event_callbacks);
 }
 

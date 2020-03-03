@@ -13,7 +13,6 @@ OTF2_FlushCallbacks TraceWriter::m_flush_callbacks = {
 void delete_event_writer(OTF2_EvtWriter *writer, OTF2_Archive *archive) {
     if (nullptr != archive && nullptr != writer) {
         OTF2_Archive_CloseEvtWriter(archive, writer);
-        OTF2_Archive_CloseEvtFiles(archive);
     }
 }
 
@@ -24,11 +23,7 @@ void delete_archive(OTF2_Archive *archive) {
 }
 
 TraceWriter::TraceWriter(const std::string &path)
-    : m_archive(nullptr, delete_archive),
-      m_event_writer(nullptr,
-                     [this](OTF2_EvtWriter *writer) {
-                         delete_event_writer(writer, m_archive.get());
-                     })
+    : m_archive(nullptr, delete_archive)
 {
     auto *archive =
         OTF2_Archive_Open(path.c_str(), "trace", OTF2_FILEMODE_WRITE,
@@ -41,13 +36,21 @@ TraceWriter::TraceWriter(const std::string &path)
     m_archive.reset(archive);
 
     OTF2_Archive_OpenEvtFiles(archive);
-    m_event_writer.reset(OTF2_Archive_GetEvtWriter(archive, 0));
 
     m_def_writer = OTF2_Archive_GetGlobalDefWriter(archive);
     assert(m_def_writer);
 }
 
-TraceWriter::~TraceWriter() {}
+TraceWriter::~TraceWriter() {
+    OTF2_Archive_CloseDefFiles(m_archive.get());
+    for(const auto & [location, dummy]: m_event_writer)
+    {
+        OTF2_DefWriter* def_writer = OTF2_Archive_GetDefWriter( m_archive.get(),
+                                                                location );
+        OTF2_Archive_CloseDefWriter( m_archive.get(), def_writer );
+    }
+    OTF2_Archive_CloseEvtFiles(m_archive.get());
+}
 
 @otf2 for def in defs|global_defs:
 
@@ -55,32 +58,30 @@ void
 TraceWriter::write@@def.name@@(@@def.funcargs(leading_comma=False)@@)
 {
     OTF2_GlobalDefWriter_Write@@def.name@@(m_def_writer@@def.callargs()@@);
+    @otf2  if def.name == 'Location':
+    auto search = m_event_writer.find(self);
+    if(search == m_event_writer.end())
+    {
+        m_event_writer.emplace(self, event_writer_ptr(OTF2_Archive_GetEvtWriter(m_archive.get(), self),
+                                                        [this](OTF2_EvtWriter *writer) {
+                                                            delete_event_writer(writer, m_archive.get());
+                                                        }));
+    }
+    @otf2 endif
 }
 
 @otf2 endfor
 
-/* void
-TraceWriter::writerEnterEvent(OTF2_LocationRef    location,
-                              OTF2_AttributeList * attributeList,
-                              OTF2_TimeStamp  	   time,
-                              OTF2_RegionRef  	   region)
-{
-    auto writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
-    OTF2_EvtWriter_Enter(writer,
-                         attributeList,
-                         time,
-                         region);
-}
+@otf2 for event in events:
 
 void
-TraceWriter::writerLeaveEvent(OTF2_LocationRef    location,
-                              OTF2_AttributeList * attributeList,
-                              OTF2_TimeStamp  	   time,
-                              OTF2_RegionRef  	   region)
+TraceWriter::write@@event.name@@Event(OTF2_LocationRef    location,
+                                      OTF2_TimeStamp      time,
+                                      OTF2_AttributeList* attributes@@event.funcargs()@@)
 {
-    auto writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
-    OTF2_EvtWriter_Leave(writer,
-                         attributeList,
-                         time,
-                         region);    
-}*/
+    OTF2_EvtWriter_@@event.name@@(m_event_writer[location].get(),
+                                  attributes,
+                                  time@@event.callargs()@@);                                  
+}
+
+@otf2 endfor

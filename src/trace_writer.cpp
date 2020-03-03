@@ -13,7 +13,6 @@ OTF2_FlushCallbacks TraceWriter::m_flush_callbacks = {
 void delete_event_writer(OTF2_EvtWriter *writer, OTF2_Archive *archive) {
     if (nullptr != archive && nullptr != writer) {
         OTF2_Archive_CloseEvtWriter(archive, writer);
-        OTF2_Archive_CloseEvtFiles(archive);
     }
 }
 
@@ -24,10 +23,7 @@ void delete_archive(OTF2_Archive *archive) {
 }
 
 TraceWriter::TraceWriter(const std::string &path)
-    : m_archive(nullptr, delete_archive),
-      m_event_writer(nullptr, [this](OTF2_EvtWriter *writer) {
-          delete_event_writer(writer, m_archive.get());
-      }) {
+    : m_archive(nullptr, delete_archive) {
     auto *archive =
         OTF2_Archive_Open(path.c_str(), "trace", OTF2_FILEMODE_WRITE,
                           1024 * 1024 /* event chunk size */,
@@ -39,13 +35,20 @@ TraceWriter::TraceWriter(const std::string &path)
     m_archive.reset(archive);
 
     OTF2_Archive_OpenEvtFiles(archive);
-    m_event_writer.reset(OTF2_Archive_GetEvtWriter(archive, 0));
 
     m_def_writer = OTF2_Archive_GetGlobalDefWriter(archive);
     assert(m_def_writer);
 }
 
-TraceWriter::~TraceWriter() {}
+TraceWriter::~TraceWriter() {
+    OTF2_Archive_CloseDefFiles(m_archive.get());
+    for (const auto &[location, dummy] : m_event_writer) {
+        OTF2_DefWriter *def_writer =
+            OTF2_Archive_GetDefWriter(m_archive.get(), location);
+        OTF2_Archive_CloseDefWriter(m_archive.get(), def_writer);
+    }
+    OTF2_Archive_CloseEvtFiles(m_archive.get());
+}
 
 void TraceWriter::writeClockProperties(uint64_t timerResolution,
                                        uint64_t globalOffset,
@@ -110,6 +113,15 @@ void TraceWriter::writeLocation(OTF2_LocationRef self, OTF2_StringRef name,
                                 OTF2_LocationGroupRef locationGroup) {
     OTF2_GlobalDefWriter_WriteLocation(m_def_writer, self, name, locationType,
                                        numberOfEvents, locationGroup);
+    auto search = m_event_writer.find(self);
+    if (search == m_event_writer.end()) {
+        m_event_writer.emplace(
+            self,
+            event_writer_ptr(OTF2_Archive_GetEvtWriter(m_archive.get(), self),
+                             [this](OTF2_EvtWriter *writer) {
+                                 delete_event_writer(writer, m_archive.get());
+                             }));
+    }
 }
 
 void TraceWriter::writeRegion(
@@ -317,28 +329,671 @@ void TraceWriter::writeCallpathParameter(OTF2_CallpathRef callpath,
                                                 parameter, type, value);
 }
 
-/* void
-TraceWriter::writerEnterEvent(OTF2_LocationRef    location,
-                              OTF2_AttributeList * attributeList,
-                              OTF2_TimeStamp  	   time,
-                              OTF2_RegionRef  	   region)
-{
-    auto writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
-    OTF2_EvtWriter_Enter(writer,
-                         attributeList,
-                         time,
+void TraceWriter::writeBufferFlushEvent(OTF2_LocationRef location,
+                                        OTF2_TimeStamp time,
+                                        OTF2_AttributeList *attributes,
+                                        OTF2_TimeStamp stopTime) {
+    OTF2_EvtWriter_BufferFlush(m_event_writer[location].get(), attributes, time,
+                               stopTime);
+}
+
+void TraceWriter::writeMeasurementOnOffEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_MeasurementMode measurementMode) {
+    OTF2_EvtWriter_MeasurementOnOff(m_event_writer[location].get(), attributes,
+                                    time, measurementMode);
+}
+
+void TraceWriter::writeEnterEvent(OTF2_LocationRef location,
+                                  OTF2_TimeStamp time,
+                                  OTF2_AttributeList *attributes,
+                                  OTF2_RegionRef region) {
+    OTF2_EvtWriter_Enter(m_event_writer[location].get(), attributes, time,
                          region);
 }
 
-void
-TraceWriter::writerLeaveEvent(OTF2_LocationRef    location,
-                              OTF2_AttributeList * attributeList,
-                              OTF2_TimeStamp  	   time,
-                              OTF2_RegionRef  	   region)
-{
-    auto writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
-    OTF2_EvtWriter_Leave(writer,
-                         attributeList,
-                         time,
+void TraceWriter::writeLeaveEvent(OTF2_LocationRef location,
+                                  OTF2_TimeStamp time,
+                                  OTF2_AttributeList *attributes,
+                                  OTF2_RegionRef region) {
+    OTF2_EvtWriter_Leave(m_event_writer[location].get(), attributes, time,
                          region);
-}*/
+}
+
+void TraceWriter::writeMpiSendEvent(OTF2_LocationRef location,
+                                    OTF2_TimeStamp time,
+                                    OTF2_AttributeList *attributes,
+                                    uint32_t receiver,
+                                    OTF2_CommRef communicator, uint32_t msgTag,
+                                    uint64_t msgLength) {
+    OTF2_EvtWriter_MpiSend(m_event_writer[location].get(), attributes, time,
+                           receiver, communicator, msgTag, msgLength);
+}
+
+void TraceWriter::writeMpiIsendEvent(OTF2_LocationRef location,
+                                     OTF2_TimeStamp time,
+                                     OTF2_AttributeList *attributes,
+                                     uint32_t receiver,
+                                     OTF2_CommRef communicator, uint32_t msgTag,
+                                     uint64_t msgLength, uint64_t requestID) {
+    OTF2_EvtWriter_MpiIsend(m_event_writer[location].get(), attributes, time,
+                            receiver, communicator, msgTag, msgLength,
+                            requestID);
+}
+
+void TraceWriter::writeMpiIsendCompleteEvent(OTF2_LocationRef location,
+                                             OTF2_TimeStamp time,
+                                             OTF2_AttributeList *attributes,
+                                             uint64_t requestID) {
+    OTF2_EvtWriter_MpiIsendComplete(m_event_writer[location].get(), attributes,
+                                    time, requestID);
+}
+
+void TraceWriter::writeMpiIrecvRequestEvent(OTF2_LocationRef location,
+                                            OTF2_TimeStamp time,
+                                            OTF2_AttributeList *attributes,
+                                            uint64_t requestID) {
+    OTF2_EvtWriter_MpiIrecvRequest(m_event_writer[location].get(), attributes,
+                                   time, requestID);
+}
+
+void TraceWriter::writeMpiRecvEvent(OTF2_LocationRef location,
+                                    OTF2_TimeStamp time,
+                                    OTF2_AttributeList *attributes,
+                                    uint32_t sender, OTF2_CommRef communicator,
+                                    uint32_t msgTag, uint64_t msgLength) {
+    OTF2_EvtWriter_MpiRecv(m_event_writer[location].get(), attributes, time,
+                           sender, communicator, msgTag, msgLength);
+}
+
+void TraceWriter::writeMpiIrecvEvent(OTF2_LocationRef location,
+                                     OTF2_TimeStamp time,
+                                     OTF2_AttributeList *attributes,
+                                     uint32_t sender, OTF2_CommRef communicator,
+                                     uint32_t msgTag, uint64_t msgLength,
+                                     uint64_t requestID) {
+    OTF2_EvtWriter_MpiIrecv(m_event_writer[location].get(), attributes, time,
+                            sender, communicator, msgTag, msgLength, requestID);
+}
+
+void TraceWriter::writeMpiRequestTestEvent(OTF2_LocationRef location,
+                                           OTF2_TimeStamp time,
+                                           OTF2_AttributeList *attributes,
+                                           uint64_t requestID) {
+    OTF2_EvtWriter_MpiRequestTest(m_event_writer[location].get(), attributes,
+                                  time, requestID);
+}
+
+void TraceWriter::writeMpiRequestCancelledEvent(OTF2_LocationRef location,
+                                                OTF2_TimeStamp time,
+                                                OTF2_AttributeList *attributes,
+                                                uint64_t requestID) {
+    OTF2_EvtWriter_MpiRequestCancelled(m_event_writer[location].get(),
+                                       attributes, time, requestID);
+}
+
+void TraceWriter::writeMpiCollectiveBeginEvent(OTF2_LocationRef location,
+                                               OTF2_TimeStamp time,
+                                               OTF2_AttributeList *attributes) {
+    OTF2_EvtWriter_MpiCollectiveBegin(m_event_writer[location].get(),
+                                      attributes, time);
+}
+
+void TraceWriter::writeMpiCollectiveEndEvent(OTF2_LocationRef location,
+                                             OTF2_TimeStamp time,
+                                             OTF2_AttributeList *attributes,
+                                             OTF2_CollectiveOp collectiveOp,
+                                             OTF2_CommRef communicator,
+                                             uint32_t root, uint64_t sizeSent,
+                                             uint64_t sizeReceived) {
+    OTF2_EvtWriter_MpiCollectiveEnd(m_event_writer[location].get(), attributes,
+                                    time, collectiveOp, communicator, root,
+                                    sizeSent, sizeReceived);
+}
+
+void TraceWriter::writeOmpForkEvent(OTF2_LocationRef location,
+                                    OTF2_TimeStamp time,
+                                    OTF2_AttributeList *attributes,
+                                    uint32_t numberOfRequestedThreads) {
+    OTF2_EvtWriter_OmpFork(m_event_writer[location].get(), attributes, time,
+                           numberOfRequestedThreads);
+}
+
+void TraceWriter::writeOmpJoinEvent(OTF2_LocationRef location,
+                                    OTF2_TimeStamp time,
+                                    OTF2_AttributeList *attributes) {
+    OTF2_EvtWriter_OmpJoin(m_event_writer[location].get(), attributes, time);
+}
+
+void TraceWriter::writeOmpAcquireLockEvent(OTF2_LocationRef location,
+                                           OTF2_TimeStamp time,
+                                           OTF2_AttributeList *attributes,
+                                           uint32_t lockID,
+                                           uint32_t acquisitionOrder) {
+    OTF2_EvtWriter_OmpAcquireLock(m_event_writer[location].get(), attributes,
+                                  time, lockID, acquisitionOrder);
+}
+
+void TraceWriter::writeOmpReleaseLockEvent(OTF2_LocationRef location,
+                                           OTF2_TimeStamp time,
+                                           OTF2_AttributeList *attributes,
+                                           uint32_t lockID,
+                                           uint32_t acquisitionOrder) {
+    OTF2_EvtWriter_OmpReleaseLock(m_event_writer[location].get(), attributes,
+                                  time, lockID, acquisitionOrder);
+}
+
+void TraceWriter::writeOmpTaskCreateEvent(OTF2_LocationRef location,
+                                          OTF2_TimeStamp time,
+                                          OTF2_AttributeList *attributes,
+                                          uint64_t taskID) {
+    OTF2_EvtWriter_OmpTaskCreate(m_event_writer[location].get(), attributes,
+                                 time, taskID);
+}
+
+void TraceWriter::writeOmpTaskSwitchEvent(OTF2_LocationRef location,
+                                          OTF2_TimeStamp time,
+                                          OTF2_AttributeList *attributes,
+                                          uint64_t taskID) {
+    OTF2_EvtWriter_OmpTaskSwitch(m_event_writer[location].get(), attributes,
+                                 time, taskID);
+}
+
+void TraceWriter::writeOmpTaskCompleteEvent(OTF2_LocationRef location,
+                                            OTF2_TimeStamp time,
+                                            OTF2_AttributeList *attributes,
+                                            uint64_t taskID) {
+    OTF2_EvtWriter_OmpTaskComplete(m_event_writer[location].get(), attributes,
+                                   time, taskID);
+}
+
+void TraceWriter::writeMetricEvent(OTF2_LocationRef location,
+                                   OTF2_TimeStamp time,
+                                   OTF2_AttributeList *attributes,
+                                   OTF2_MetricRef metric,
+                                   uint8_t numberOfMetrics,
+                                   const OTF2_Type *typeIDs,
+                                   const OTF2_MetricValue *metricValues) {
+    OTF2_EvtWriter_Metric(m_event_writer[location].get(), attributes, time,
+                          metric, numberOfMetrics, typeIDs, metricValues);
+}
+
+void TraceWriter::writeParameterStringEvent(OTF2_LocationRef location,
+                                            OTF2_TimeStamp time,
+                                            OTF2_AttributeList *attributes,
+                                            OTF2_ParameterRef parameter,
+                                            OTF2_StringRef string) {
+    OTF2_EvtWriter_ParameterString(m_event_writer[location].get(), attributes,
+                                   time, parameter, string);
+}
+
+void TraceWriter::writeParameterIntEvent(OTF2_LocationRef location,
+                                         OTF2_TimeStamp time,
+                                         OTF2_AttributeList *attributes,
+                                         OTF2_ParameterRef parameter,
+                                         int64_t value) {
+    OTF2_EvtWriter_ParameterInt(m_event_writer[location].get(), attributes,
+                                time, parameter, value);
+}
+
+void TraceWriter::writeParameterUnsignedIntEvent(OTF2_LocationRef location,
+                                                 OTF2_TimeStamp time,
+                                                 OTF2_AttributeList *attributes,
+                                                 OTF2_ParameterRef parameter,
+                                                 uint64_t value) {
+    OTF2_EvtWriter_ParameterUnsignedInt(m_event_writer[location].get(),
+                                        attributes, time, parameter, value);
+}
+
+void TraceWriter::writeRmaWinCreateEvent(OTF2_LocationRef location,
+                                         OTF2_TimeStamp time,
+                                         OTF2_AttributeList *attributes,
+                                         OTF2_RmaWinRef win) {
+    OTF2_EvtWriter_RmaWinCreate(m_event_writer[location].get(), attributes,
+                                time, win);
+}
+
+void TraceWriter::writeRmaWinDestroyEvent(OTF2_LocationRef location,
+                                          OTF2_TimeStamp time,
+                                          OTF2_AttributeList *attributes,
+                                          OTF2_RmaWinRef win) {
+    OTF2_EvtWriter_RmaWinDestroy(m_event_writer[location].get(), attributes,
+                                 time, win);
+}
+
+void TraceWriter::writeRmaCollectiveBeginEvent(OTF2_LocationRef location,
+                                               OTF2_TimeStamp time,
+                                               OTF2_AttributeList *attributes) {
+    OTF2_EvtWriter_RmaCollectiveBegin(m_event_writer[location].get(),
+                                      attributes, time);
+}
+
+void TraceWriter::writeRmaCollectiveEndEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_CollectiveOp collectiveOp,
+    OTF2_RmaSyncLevel syncLevel, OTF2_RmaWinRef win, uint32_t root,
+    uint64_t bytesSent, uint64_t bytesReceived) {
+    OTF2_EvtWriter_RmaCollectiveEnd(m_event_writer[location].get(), attributes,
+                                    time, collectiveOp, syncLevel, win, root,
+                                    bytesSent, bytesReceived);
+}
+
+void TraceWriter::writeRmaGroupSyncEvent(OTF2_LocationRef location,
+                                         OTF2_TimeStamp time,
+                                         OTF2_AttributeList *attributes,
+                                         OTF2_RmaSyncLevel syncLevel,
+                                         OTF2_RmaWinRef win,
+                                         OTF2_GroupRef group) {
+    OTF2_EvtWriter_RmaGroupSync(m_event_writer[location].get(), attributes,
+                                time, syncLevel, win, group);
+}
+
+void TraceWriter::writeRmaRequestLockEvent(OTF2_LocationRef location,
+                                           OTF2_TimeStamp time,
+                                           OTF2_AttributeList *attributes,
+                                           OTF2_RmaWinRef win, uint32_t remote,
+                                           uint64_t lockId,
+                                           OTF2_LockType lockType) {
+    OTF2_EvtWriter_RmaRequestLock(m_event_writer[location].get(), attributes,
+                                  time, win, remote, lockId, lockType);
+}
+
+void TraceWriter::writeRmaAcquireLockEvent(OTF2_LocationRef location,
+                                           OTF2_TimeStamp time,
+                                           OTF2_AttributeList *attributes,
+                                           OTF2_RmaWinRef win, uint32_t remote,
+                                           uint64_t lockId,
+                                           OTF2_LockType lockType) {
+    OTF2_EvtWriter_RmaAcquireLock(m_event_writer[location].get(), attributes,
+                                  time, win, remote, lockId, lockType);
+}
+
+void TraceWriter::writeRmaTryLockEvent(OTF2_LocationRef location,
+                                       OTF2_TimeStamp time,
+                                       OTF2_AttributeList *attributes,
+                                       OTF2_RmaWinRef win, uint32_t remote,
+                                       uint64_t lockId,
+                                       OTF2_LockType lockType) {
+    OTF2_EvtWriter_RmaTryLock(m_event_writer[location].get(), attributes, time,
+                              win, remote, lockId, lockType);
+}
+
+void TraceWriter::writeRmaReleaseLockEvent(OTF2_LocationRef location,
+                                           OTF2_TimeStamp time,
+                                           OTF2_AttributeList *attributes,
+                                           OTF2_RmaWinRef win, uint32_t remote,
+                                           uint64_t lockId) {
+    OTF2_EvtWriter_RmaReleaseLock(m_event_writer[location].get(), attributes,
+                                  time, win, remote, lockId);
+}
+
+void TraceWriter::writeRmaSyncEvent(OTF2_LocationRef location,
+                                    OTF2_TimeStamp time,
+                                    OTF2_AttributeList *attributes,
+                                    OTF2_RmaWinRef win, uint32_t remote,
+                                    OTF2_RmaSyncType syncType) {
+    OTF2_EvtWriter_RmaSync(m_event_writer[location].get(), attributes, time,
+                           win, remote, syncType);
+}
+
+void TraceWriter::writeRmaWaitChangeEvent(OTF2_LocationRef location,
+                                          OTF2_TimeStamp time,
+                                          OTF2_AttributeList *attributes,
+                                          OTF2_RmaWinRef win) {
+    OTF2_EvtWriter_RmaWaitChange(m_event_writer[location].get(), attributes,
+                                 time, win);
+}
+
+void TraceWriter::writeRmaPutEvent(OTF2_LocationRef location,
+                                   OTF2_TimeStamp time,
+                                   OTF2_AttributeList *attributes,
+                                   OTF2_RmaWinRef win, uint32_t remote,
+                                   uint64_t bytes, uint64_t matchingId) {
+    OTF2_EvtWriter_RmaPut(m_event_writer[location].get(), attributes, time, win,
+                          remote, bytes, matchingId);
+}
+
+void TraceWriter::writeRmaGetEvent(OTF2_LocationRef location,
+                                   OTF2_TimeStamp time,
+                                   OTF2_AttributeList *attributes,
+                                   OTF2_RmaWinRef win, uint32_t remote,
+                                   uint64_t bytes, uint64_t matchingId) {
+    OTF2_EvtWriter_RmaGet(m_event_writer[location].get(), attributes, time, win,
+                          remote, bytes, matchingId);
+}
+
+void TraceWriter::writeRmaAtomicEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_RmaWinRef win, uint32_t remote,
+    OTF2_RmaAtomicType type, uint64_t bytesSent, uint64_t bytesReceived,
+    uint64_t matchingId) {
+    OTF2_EvtWriter_RmaAtomic(m_event_writer[location].get(), attributes, time,
+                             win, remote, type, bytesSent, bytesReceived,
+                             matchingId);
+}
+
+void TraceWriter::writeRmaOpCompleteBlockingEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_RmaWinRef win, uint64_t matchingId) {
+    OTF2_EvtWriter_RmaOpCompleteBlocking(m_event_writer[location].get(),
+                                         attributes, time, win, matchingId);
+}
+
+void TraceWriter::writeRmaOpCompleteNonBlockingEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_RmaWinRef win, uint64_t matchingId) {
+    OTF2_EvtWriter_RmaOpCompleteNonBlocking(m_event_writer[location].get(),
+                                            attributes, time, win, matchingId);
+}
+
+void TraceWriter::writeRmaOpTestEvent(OTF2_LocationRef location,
+                                      OTF2_TimeStamp time,
+                                      OTF2_AttributeList *attributes,
+                                      OTF2_RmaWinRef win, uint64_t matchingId) {
+    OTF2_EvtWriter_RmaOpTest(m_event_writer[location].get(), attributes, time,
+                             win, matchingId);
+}
+
+void TraceWriter::writeRmaOpCompleteRemoteEvent(OTF2_LocationRef location,
+                                                OTF2_TimeStamp time,
+                                                OTF2_AttributeList *attributes,
+                                                OTF2_RmaWinRef win,
+                                                uint64_t matchingId) {
+    OTF2_EvtWriter_RmaOpCompleteRemote(m_event_writer[location].get(),
+                                       attributes, time, win, matchingId);
+}
+
+void TraceWriter::writeThreadForkEvent(OTF2_LocationRef location,
+                                       OTF2_TimeStamp time,
+                                       OTF2_AttributeList *attributes,
+                                       OTF2_Paradigm model,
+                                       uint32_t numberOfRequestedThreads) {
+    OTF2_EvtWriter_ThreadFork(m_event_writer[location].get(), attributes, time,
+                              model, numberOfRequestedThreads);
+}
+
+void TraceWriter::writeThreadJoinEvent(OTF2_LocationRef location,
+                                       OTF2_TimeStamp time,
+                                       OTF2_AttributeList *attributes,
+                                       OTF2_Paradigm model) {
+    OTF2_EvtWriter_ThreadJoin(m_event_writer[location].get(), attributes, time,
+                              model);
+}
+
+void TraceWriter::writeThreadTeamBeginEvent(OTF2_LocationRef location,
+                                            OTF2_TimeStamp time,
+                                            OTF2_AttributeList *attributes,
+                                            OTF2_CommRef threadTeam) {
+    OTF2_EvtWriter_ThreadTeamBegin(m_event_writer[location].get(), attributes,
+                                   time, threadTeam);
+}
+
+void TraceWriter::writeThreadTeamEndEvent(OTF2_LocationRef location,
+                                          OTF2_TimeStamp time,
+                                          OTF2_AttributeList *attributes,
+                                          OTF2_CommRef threadTeam) {
+    OTF2_EvtWriter_ThreadTeamEnd(m_event_writer[location].get(), attributes,
+                                 time, threadTeam);
+}
+
+void TraceWriter::writeThreadAcquireLockEvent(OTF2_LocationRef location,
+                                              OTF2_TimeStamp time,
+                                              OTF2_AttributeList *attributes,
+                                              OTF2_Paradigm model,
+                                              uint32_t lockID,
+                                              uint32_t acquisitionOrder) {
+    OTF2_EvtWriter_ThreadAcquireLock(m_event_writer[location].get(), attributes,
+                                     time, model, lockID, acquisitionOrder);
+}
+
+void TraceWriter::writeThreadReleaseLockEvent(OTF2_LocationRef location,
+                                              OTF2_TimeStamp time,
+                                              OTF2_AttributeList *attributes,
+                                              OTF2_Paradigm model,
+                                              uint32_t lockID,
+                                              uint32_t acquisitionOrder) {
+    OTF2_EvtWriter_ThreadReleaseLock(m_event_writer[location].get(), attributes,
+                                     time, model, lockID, acquisitionOrder);
+}
+
+void TraceWriter::writeThreadTaskCreateEvent(OTF2_LocationRef location,
+                                             OTF2_TimeStamp time,
+                                             OTF2_AttributeList *attributes,
+                                             OTF2_CommRef threadTeam,
+                                             uint32_t creatingThread,
+                                             uint32_t generationNumber) {
+    OTF2_EvtWriter_ThreadTaskCreate(m_event_writer[location].get(), attributes,
+                                    time, threadTeam, creatingThread,
+                                    generationNumber);
+}
+
+void TraceWriter::writeThreadTaskSwitchEvent(OTF2_LocationRef location,
+                                             OTF2_TimeStamp time,
+                                             OTF2_AttributeList *attributes,
+                                             OTF2_CommRef threadTeam,
+                                             uint32_t creatingThread,
+                                             uint32_t generationNumber) {
+    OTF2_EvtWriter_ThreadTaskSwitch(m_event_writer[location].get(), attributes,
+                                    time, threadTeam, creatingThread,
+                                    generationNumber);
+}
+
+void TraceWriter::writeThreadTaskCompleteEvent(OTF2_LocationRef location,
+                                               OTF2_TimeStamp time,
+                                               OTF2_AttributeList *attributes,
+                                               OTF2_CommRef threadTeam,
+                                               uint32_t creatingThread,
+                                               uint32_t generationNumber) {
+    OTF2_EvtWriter_ThreadTaskComplete(m_event_writer[location].get(),
+                                      attributes, time, threadTeam,
+                                      creatingThread, generationNumber);
+}
+
+void TraceWriter::writeThreadCreateEvent(OTF2_LocationRef location,
+                                         OTF2_TimeStamp time,
+                                         OTF2_AttributeList *attributes,
+                                         OTF2_CommRef threadContingent,
+                                         uint64_t sequenceCount) {
+    OTF2_EvtWriter_ThreadCreate(m_event_writer[location].get(), attributes,
+                                time, threadContingent, sequenceCount);
+}
+
+void TraceWriter::writeThreadBeginEvent(OTF2_LocationRef location,
+                                        OTF2_TimeStamp time,
+                                        OTF2_AttributeList *attributes,
+                                        OTF2_CommRef threadContingent,
+                                        uint64_t sequenceCount) {
+    OTF2_EvtWriter_ThreadBegin(m_event_writer[location].get(), attributes, time,
+                               threadContingent, sequenceCount);
+}
+
+void TraceWriter::writeThreadWaitEvent(OTF2_LocationRef location,
+                                       OTF2_TimeStamp time,
+                                       OTF2_AttributeList *attributes,
+                                       OTF2_CommRef threadContingent,
+                                       uint64_t sequenceCount) {
+    OTF2_EvtWriter_ThreadWait(m_event_writer[location].get(), attributes, time,
+                              threadContingent, sequenceCount);
+}
+
+void TraceWriter::writeThreadEndEvent(OTF2_LocationRef location,
+                                      OTF2_TimeStamp time,
+                                      OTF2_AttributeList *attributes,
+                                      OTF2_CommRef threadContingent,
+                                      uint64_t sequenceCount) {
+    OTF2_EvtWriter_ThreadEnd(m_event_writer[location].get(), attributes, time,
+                             threadContingent, sequenceCount);
+}
+
+void TraceWriter::writeCallingContextEnterEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_CallingContextRef callingContext,
+    uint32_t unwindDistance) {
+    OTF2_EvtWriter_CallingContextEnter(m_event_writer[location].get(),
+                                       attributes, time, callingContext,
+                                       unwindDistance);
+}
+
+void TraceWriter::writeCallingContextLeaveEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_CallingContextRef callingContext) {
+    OTF2_EvtWriter_CallingContextLeave(m_event_writer[location].get(),
+                                       attributes, time, callingContext);
+}
+
+void TraceWriter::writeCallingContextSampleEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_CallingContextRef callingContext,
+    uint32_t unwindDistance, OTF2_InterruptGeneratorRef interruptGenerator) {
+    OTF2_EvtWriter_CallingContextSample(m_event_writer[location].get(),
+                                        attributes, time, callingContext,
+                                        unwindDistance, interruptGenerator);
+}
+
+void TraceWriter::writeIoCreateHandleEvent(OTF2_LocationRef location,
+                                           OTF2_TimeStamp time,
+                                           OTF2_AttributeList *attributes,
+                                           OTF2_IoHandleRef handle,
+                                           OTF2_IoAccessMode mode,
+                                           OTF2_IoCreationFlag creationFlags,
+                                           OTF2_IoStatusFlag statusFlags) {
+    OTF2_EvtWriter_IoCreateHandle(m_event_writer[location].get(), attributes,
+                                  time, handle, mode, creationFlags,
+                                  statusFlags);
+}
+
+void TraceWriter::writeIoDestroyHandleEvent(OTF2_LocationRef location,
+                                            OTF2_TimeStamp time,
+                                            OTF2_AttributeList *attributes,
+                                            OTF2_IoHandleRef handle) {
+    OTF2_EvtWriter_IoDestroyHandle(m_event_writer[location].get(), attributes,
+                                   time, handle);
+}
+
+void TraceWriter::writeIoDuplicateHandleEvent(OTF2_LocationRef location,
+                                              OTF2_TimeStamp time,
+                                              OTF2_AttributeList *attributes,
+                                              OTF2_IoHandleRef oldHandle,
+                                              OTF2_IoHandleRef newHandle,
+                                              OTF2_IoStatusFlag statusFlags) {
+    OTF2_EvtWriter_IoDuplicateHandle(m_event_writer[location].get(), attributes,
+                                     time, oldHandle, newHandle, statusFlags);
+}
+
+void TraceWriter::writeIoSeekEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_IoHandleRef handle,
+    int64_t offsetRequest, OTF2_IoSeekOption whence, uint64_t offsetResult) {
+    OTF2_EvtWriter_IoSeek(m_event_writer[location].get(), attributes, time,
+                          handle, offsetRequest, whence, offsetResult);
+}
+
+void TraceWriter::writeIoChangeStatusFlagsEvent(OTF2_LocationRef location,
+                                                OTF2_TimeStamp time,
+                                                OTF2_AttributeList *attributes,
+                                                OTF2_IoHandleRef handle,
+                                                OTF2_IoStatusFlag statusFlags) {
+    OTF2_EvtWriter_IoChangeStatusFlags(m_event_writer[location].get(),
+                                       attributes, time, handle, statusFlags);
+}
+
+void TraceWriter::writeIoDeleteFileEvent(OTF2_LocationRef location,
+                                         OTF2_TimeStamp time,
+                                         OTF2_AttributeList *attributes,
+                                         OTF2_IoParadigmRef ioParadigm,
+                                         OTF2_IoFileRef file) {
+    OTF2_EvtWriter_IoDeleteFile(m_event_writer[location].get(), attributes,
+                                time, ioParadigm, file);
+}
+
+void TraceWriter::writeIoOperationBeginEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_IoHandleRef handle,
+    OTF2_IoOperationMode mode, OTF2_IoOperationFlag operationFlags,
+    uint64_t bytesRequest, uint64_t matchingId) {
+    OTF2_EvtWriter_IoOperationBegin(m_event_writer[location].get(), attributes,
+                                    time, handle, mode, operationFlags,
+                                    bytesRequest, matchingId);
+}
+
+void TraceWriter::writeIoOperationTestEvent(OTF2_LocationRef location,
+                                            OTF2_TimeStamp time,
+                                            OTF2_AttributeList *attributes,
+                                            OTF2_IoHandleRef handle,
+                                            uint64_t matchingId) {
+    OTF2_EvtWriter_IoOperationTest(m_event_writer[location].get(), attributes,
+                                   time, handle, matchingId);
+}
+
+void TraceWriter::writeIoOperationIssuedEvent(OTF2_LocationRef location,
+                                              OTF2_TimeStamp time,
+                                              OTF2_AttributeList *attributes,
+                                              OTF2_IoHandleRef handle,
+                                              uint64_t matchingId) {
+    OTF2_EvtWriter_IoOperationIssued(m_event_writer[location].get(), attributes,
+                                     time, handle, matchingId);
+}
+
+void TraceWriter::writeIoOperationCompleteEvent(OTF2_LocationRef location,
+                                                OTF2_TimeStamp time,
+                                                OTF2_AttributeList *attributes,
+                                                OTF2_IoHandleRef handle,
+                                                uint64_t bytesResult,
+                                                uint64_t matchingId) {
+    OTF2_EvtWriter_IoOperationComplete(m_event_writer[location].get(),
+                                       attributes, time, handle, bytesResult,
+                                       matchingId);
+}
+
+void TraceWriter::writeIoOperationCancelledEvent(OTF2_LocationRef location,
+                                                 OTF2_TimeStamp time,
+                                                 OTF2_AttributeList *attributes,
+                                                 OTF2_IoHandleRef handle,
+                                                 uint64_t matchingId) {
+    OTF2_EvtWriter_IoOperationCancelled(m_event_writer[location].get(),
+                                        attributes, time, handle, matchingId);
+}
+
+void TraceWriter::writeIoAcquireLockEvent(OTF2_LocationRef location,
+                                          OTF2_TimeStamp time,
+                                          OTF2_AttributeList *attributes,
+                                          OTF2_IoHandleRef handle,
+                                          OTF2_LockType lockType) {
+    OTF2_EvtWriter_IoAcquireLock(m_event_writer[location].get(), attributes,
+                                 time, handle, lockType);
+}
+
+void TraceWriter::writeIoReleaseLockEvent(OTF2_LocationRef location,
+                                          OTF2_TimeStamp time,
+                                          OTF2_AttributeList *attributes,
+                                          OTF2_IoHandleRef handle,
+                                          OTF2_LockType lockType) {
+    OTF2_EvtWriter_IoReleaseLock(m_event_writer[location].get(), attributes,
+                                 time, handle, lockType);
+}
+
+void TraceWriter::writeIoTryLockEvent(OTF2_LocationRef location,
+                                      OTF2_TimeStamp time,
+                                      OTF2_AttributeList *attributes,
+                                      OTF2_IoHandleRef handle,
+                                      OTF2_LockType lockType) {
+    OTF2_EvtWriter_IoTryLock(m_event_writer[location].get(), attributes, time,
+                             handle, lockType);
+}
+
+void TraceWriter::writeProgramBeginEvent(
+    OTF2_LocationRef location, OTF2_TimeStamp time,
+    OTF2_AttributeList *attributes, OTF2_StringRef programName,
+    uint32_t numberOfArguments, const OTF2_StringRef *programArguments) {
+    OTF2_EvtWriter_ProgramBegin(m_event_writer[location].get(), attributes,
+                                time, programName, numberOfArguments,
+                                programArguments);
+}
+
+void TraceWriter::writeProgramEndEvent(OTF2_LocationRef location,
+                                       OTF2_TimeStamp time,
+                                       OTF2_AttributeList *attributes,
+                                       int64_t exitStatus) {
+    OTF2_EvtWriter_ProgramEnd(m_event_writer[location].get(), attributes, time,
+                              exitStatus);
+}

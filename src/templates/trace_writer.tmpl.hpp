@@ -35,6 +35,14 @@ class TraceWriter: public Otf2Writer {
 
     @otf2 endfor
  
+    @otf2 for event in events:
+
+    virtual void
+    write@@event.name@@Event(OTF2_LocationRef    location,
+                             OTF2_TimeStamp      time,
+                             OTF2_AttributeList* attributes@@event.funcargs()@@) override;
+    
+    @otf2 endfor
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;
     archive_ptr m_archive;

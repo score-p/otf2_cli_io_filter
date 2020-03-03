@@ -16,6 +16,14 @@ public:
 
     @otf2 endfor
 
+    @otf2 for event in events:
+
+    virtual void
+    write@@event.name@@Event(OTF2_LocationRef    location,
+                             OTF2_TimeStamp      time,
+                             OTF2_AttributeList* attributes@@event.funcargs()@@) = 0;
+    
+    @otf2 endfor
 };
 
 #endif /* OTF2_WRITER_H */
