@@ -1,5 +1,5 @@
 #include "trace_reader.hpp"
-#include <iostream>
+
 namespace event {
 
 OTF2_CallbackCode BufferFlushCb(OTF2_LocationRef location, OTF2_TimeStamp time,

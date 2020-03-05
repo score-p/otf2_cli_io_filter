@@ -2,8 +2,8 @@
 #define TRACE_WRITER_H
 
 #include <functional>
-#include <memory>
 #include <map>
+#include <memory>
 #include <string>
 
 extern "C" {
@@ -629,7 +629,7 @@ class TraceWriter : public Otf2Writer {
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;
     archive_ptr m_archive;
-    std::map<OTF2_LocationRef,event_writer_ptr> m_event_writer;
+    std::map<OTF2_LocationRef, event_writer_ptr> m_event_writer;
     OTF2_GlobalDefWriter *m_def_writer;
 };
 

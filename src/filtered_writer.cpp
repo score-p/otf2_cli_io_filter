@@ -1,5 +1,3 @@
 #include "filtered_writer.hpp"
 
-FilteredWriter::FilteredWriter(const std::string &path)
-:TraceWriter(path)
-{}
+FilteredWriter::FilteredWriter(const std::string &path) : TraceWriter(path) {}
