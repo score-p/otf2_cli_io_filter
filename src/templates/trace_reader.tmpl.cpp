@@ -1,22 +1,54 @@
 #include <cassert>
 #include <iostream>
 
-#include "trace_reader.hpp"
-#include "event_callbacks.hpp"
+#include <local_reader.hpp>
+#include <trace_reader.hpp>
 
-TraceReader::TraceReader(const std::string &path, Otf2Writer & writer)
+TraceReader::TraceReader(const std::string &path,
+                         Otf2Writer & writer,
+                         size_t nthreads)
 :m_writer(writer),
 m_reader(OTF2_Reader_Open(path.c_str()), OTF2_Reader_Close),
-m_global_event_reader(nullptr,
-                      [this](OTF2_GlobalEvtReader *reader){
-                          OTF2_Reader_CloseGlobalEvtReader(m_reader.get(), 
-                                                           reader);
-                      }),
-m_location_count(0)
+m_location_count(0),
+m_thread_count(nthreads)
 {
     OTF2_Reader_SetSerialCollectiveCallbacks(m_reader.get());
     OTF2_Reader_GetNumberOfLocations(m_reader.get(), &m_location_count);
-    m_global_def_reader = OTF2_Reader_GetGlobalDefReader(m_reader.get());
+
+    read_definitions();
+}
+// TODO name it process_events??
+void
+TraceReader::read()
+{
+    std::vector<std::thread> workers;
+
+    size_t locations_per_thread = m_locations.size() / m_thread_count;
+    size_t rest_locations = m_locations.size() - locations_per_thread * m_thread_count;
+
+    std::vector<size_t> thread_location_count(m_thread_count, locations_per_thread);
+    for(int i = 0; rest_locations > 0; rest_locations--, i++)
+    {
+        thread_location_count[i % m_thread_count]++;
+    }
+
+    auto src_begin = m_locations.begin();
+    for(size_t i = 0; i < thread_location_count.size(); i++)
+    {
+        auto thread_locations = std::vector<size_t>(src_begin, src_begin + thread_location_count[i]);
+        workers.emplace_back(LocalReader(), m_reader.get(), thread_locations);
+        src_begin += thread_location_count[i];
+    }
+    for(auto & w: workers)
+    {
+        w.join();
+    }
+}
+
+void
+TraceReader::read_definitions()
+{
+    OTF2_GlobalDefReader * global_def_reader = OTF2_Reader_GetGlobalDefReader(m_reader.get());
     
     // TODO unique pointer
     OTF2_GlobalDefReaderCallbacks* def_callbacks = OTF2_GlobalDefReaderCallbacks_New();
@@ -29,51 +61,15 @@ m_location_count(0)
     @otf2 endfor
 
     OTF2_Reader_RegisterGlobalDefCallbacks(m_reader.get(),
-                                           m_global_def_reader,
+                                           global_def_reader,
                                            def_callbacks,
                                            this);
     
     OTF2_GlobalDefReaderCallbacks_Delete(def_callbacks);
-
-    read_definitions();
-
-    m_global_event_reader.reset(OTF2_Reader_GetGlobalEvtReader(m_reader.get()));
-    assert(m_global_event_reader != nullptr);
-
-    // TODO unique pointer
-    OTF2_GlobalEvtReaderCallbacks* event_callbacks = OTF2_GlobalEvtReaderCallbacks_New();
-
-    @otf2 for event in events:
-
-    OTF2_GlobalEvtReaderCallbacks_Set@@event.name@@Callback(event_callbacks,
-                                                            event::@@event.name@@Cb);
-    
-    @otf2 endfor
-
-    OTF2_Reader_RegisterGlobalEvtCallbacks(m_reader.get(),
-                                           m_global_event_reader.get(),
-                                           event_callbacks,
-                                           this);    
-    
-    OTF2_GlobalEvtReaderCallbacks_Delete(event_callbacks);
-}
-
-void
-TraceReader::read()
-{
-    uint64_t events_read = 0;
-    OTF2_Reader_ReadAllGlobalEvents(m_reader.get(),
-                                    m_global_event_reader.get(),
-                                    &events_read);
-    std::cout << "Read " << events_read << " events\n"; 
-}
-
-void
-TraceReader::read_definitions()
-{
+   
     uint64_t definitions_read = 0;
     OTF2_Reader_ReadAllGlobalDefinitions(m_reader.get(),
-                                         m_global_def_reader,
+                                         global_def_reader,
                                          &definitions_read);
 
     for(OTF2_LocationRef location:  m_locations)
@@ -82,7 +78,7 @@ TraceReader::read_definitions()
     }
 
     bool def_files_opened = OTF2_Reader_OpenDefFiles(m_reader.get()) == OTF2_SUCCESS;
-    OTF2_Reader_OpenEvtFiles(m_reader.get());
+    // OTF2_Reader_OpenEvtFiles(m_reader.get());
 
     for (OTF2_LocationRef location:  m_locations)
     {
@@ -98,12 +94,15 @@ TraceReader::read_definitions()
                 OTF2_Reader_CloseDefReader(m_reader.get(), def_reader);
             }
         }
-        [[maybe_unused]]
-        OTF2_EvtReader* evt_reader = OTF2_Reader_GetEvtReader(m_reader.get(), location);
+        // [[maybe_unused]]
+        // OTF2_EvtReader* evt_reader = OTF2_Reader_GetEvtReader(m_reader.get(), location);
     }
     
     if (def_files_opened)
     {
         OTF2_Reader_CloseDefFiles(m_reader.get());
     }
+    
+    OTF2_Reader_CloseGlobalDefReader(m_reader.get(),
+                                     global_def_reader);
 }            

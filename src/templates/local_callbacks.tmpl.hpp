@@ -13,6 +13,7 @@ namespace event
     OTF2_CallbackCode
     @@event.name@@Cb(OTF2_LocationRef    location,
                      OTF2_TimeStamp      time,
+                     uint64_t            eventPosition,
                      void*               userData,
                      OTF2_AttributeList* attributes@@event.funcargs()@@);
 

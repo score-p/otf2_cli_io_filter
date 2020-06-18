@@ -6,6 +6,11 @@ project(otf2_filter_io)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 find_package(OTF2 REQUIRED)
 
 macro(generate_otf2 target_name infile outfile)
@@ -18,16 +23,17 @@ endmacro()
 
 SET(TEMPLATE_HPP_FILES
     "definition_callbacks.tmpl.hpp"
-    "event_callbacks.tmpl.hpp"
+    "local_callbacks.tmpl.hpp"
     "otf2_writer.tmpl.hpp"
     "trace_writer.tmpl.hpp"
 )
 
 SET(TEMPLATE_CPP_FILES
     "definition_callbacks.tmpl.cpp"
-    "event_callbacks.tmpl.cpp"
+    "local_callbacks.tmpl.cpp"
     "trace_writer.tmpl.cpp"
     "trace_reader.tmpl.cpp"
+    "local_reader.tmpl.cpp"
 )
 
 add_custom_target(generate)
