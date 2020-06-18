@@ -174,7 +174,7 @@ void TraceReader::read_definitions() {
 
     bool def_files_opened =
         OTF2_Reader_OpenDefFiles(m_reader.get()) == OTF2_SUCCESS;
-        
+
     for (OTF2_LocationRef location : m_locations) {
         if (def_files_opened) {
             OTF2_DefReader *def_reader =

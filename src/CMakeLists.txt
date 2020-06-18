@@ -1,3 +1,21 @@
+set(OTF2_FILTER_FMT_SRC 
+    include/definition_callbacks.hpp
+    include/filtered_writer.hpp
+    include/local_callbacks.hpp
+    include/local_reader.hpp
+    include/otf2_writer.hpp
+    include/trace_reader.hpp
+    include/trace_writer.hpp
+    definition_callbacks.cpp
+    filtered_writer.cpp
+    local_callbacks.cpp
+    local_reader.cpp
+    trace_reader.cpp
+    trace_writer.cpp
+    otf2_filter_io.cpp)
+
+clangformat_setup(${OTF2_FILTER_FMT_SRC})
+
 add_executable(otf2_filter_io otf2_filter_io.cpp 
                               trace_writer.cpp
                               trace_reader.cpp
