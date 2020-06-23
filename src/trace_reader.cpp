@@ -168,29 +168,5 @@ void TraceReader::read_definitions() {
     OTF2_Reader_ReadAllGlobalDefinitions(m_reader.get(), global_def_reader,
                                          &definitions_read);
 
-    for (OTF2_LocationRef location : m_locations) {
-        OTF2_Reader_SelectLocation(m_reader.get(), location);
-    }
-
-    bool def_files_opened =
-        OTF2_Reader_OpenDefFiles(m_reader.get()) == OTF2_SUCCESS;
-
-    for (OTF2_LocationRef location : m_locations) {
-        if (def_files_opened) {
-            OTF2_DefReader *def_reader =
-                OTF2_Reader_GetDefReader(m_reader.get(), location);
-            if (def_reader) {
-                uint64_t def_reads = 0;
-                OTF2_Reader_ReadAllLocalDefinitions(m_reader.get(), def_reader,
-                                                    &def_reads);
-                OTF2_Reader_CloseDefReader(m_reader.get(), def_reader);
-            }
-        }
-    }
-
-    if (def_files_opened) {
-        OTF2_Reader_CloseDefFiles(m_reader.get());
-    }
-
     OTF2_Reader_CloseGlobalDefReader(m_reader.get(), global_def_reader);
 }

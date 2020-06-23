@@ -12,6 +12,43 @@ LocalReader::~LocalReader()
 }
 
 void
+LocalReader::read_definitions(OTF2_Reader* reader, const std::vector<size_t> & locations)
+{
+    bool successful_open_def_files = OTF2_Reader_OpenDefFiles( reader ) == OTF2_SUCCESS;
+
+    OTF2_DefReaderCallbacks* def_callbacks = OTF2_DefReaderCallbacks_New();
+
+    @otf2 for def in defs|local_defs:
+
+    OTF2_DefReaderCallbacks_Set@@def.name@@Callback(def_callbacks, definition::Local@@def.name@@Cb);
+
+    @otf2 endfor
+
+    for (auto location: locations)
+    {
+        if ( successful_open_def_files )
+        {
+            OTF2_DefReader* def_reader = OTF2_Reader_GetDefReader( reader, location );
+            OTF2_Reader_RegisterDefCallbacks(reader, def_reader, def_callbacks, this);
+            if ( def_reader )
+            {
+                uint64_t def_reads = 0;
+                OTF2_Reader_ReadAllLocalDefinitions( reader,
+                                                    def_reader,
+                                                    &def_reads );
+                OTF2_Reader_CloseDefReader( reader, def_reader );
+            }
+        }
+        [[maybe_unused]]
+        OTF2_EvtReader* evt_reader = OTF2_Reader_GetEvtReader( reader, location );
+    }
+    if ( successful_open_def_files )
+    {
+        OTF2_Reader_CloseDefFiles( reader );
+    }
+}
+
+void
 LocalReader::read_events(OTF2_Reader* reader, const std::vector<size_t> & locations)
 {
     OTF2_Reader_OpenEvtFiles( reader );
