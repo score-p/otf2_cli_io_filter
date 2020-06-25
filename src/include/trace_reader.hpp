@@ -7,8 +7,8 @@
 #include <string>
 #include <thread>
 
-#include "definition_callbacks.hpp"
-#include "otf2_writer.hpp"
+#include <global_callbacks.hpp>
+#include <otf2_writer.hpp>
 
 extern "C" {
 #include <otf2/otf2.h>
@@ -37,11 +37,10 @@ class TraceReader {
     std::size_t m_thread_count;
     std::vector<OTF2_LocationRef> m_locations;
 
-    friend OTF2_CallbackCode
-    definition::LocationCb(void *userData, OTF2_LocationRef location,
-                           OTF2_StringRef name, OTF2_LocationType locationType,
-                           uint64_t numberOfEvents,
-                           OTF2_LocationGroupRef locationGroup);
+    friend OTF2_CallbackCode definition::GlobalLocationCb(
+        void *userData, OTF2_LocationRef location, OTF2_StringRef name,
+        OTF2_LocationType locationType, uint64_t numberOfEvents,
+        OTF2_LocationGroupRef locationGroup);
 };
 
 #endif /* TRACE_READER_H */

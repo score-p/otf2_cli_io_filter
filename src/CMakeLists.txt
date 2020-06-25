@@ -1,12 +1,12 @@
 set(OTF2_FILTER_FMT_SRC 
-    include/definition_callbacks.hpp
+    include/global_callbacks.hpp
     include/filtered_writer.hpp
     include/local_callbacks.hpp
     include/local_reader.hpp
     include/otf2_writer.hpp
     include/trace_reader.hpp
     include/trace_writer.hpp
-    definition_callbacks.cpp
+    global_callbacks.cpp
     filtered_writer.cpp
     local_callbacks.cpp
     local_reader.cpp
@@ -21,7 +21,7 @@ add_executable(otf2_filter_io otf2_filter_io.cpp
                               trace_reader.cpp
                               local_reader.cpp
                               filtered_writer.cpp
-                              definition_callbacks.cpp
+                              global_callbacks.cpp
                               local_callbacks.cpp)
                               
 target_link_libraries(otf2_filter_io PUBLIC otf2::otf2)

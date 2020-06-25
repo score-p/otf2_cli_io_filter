@@ -1,6 +1,5 @@
 #include <local_reader.hpp>
 #include <local_callbacks.hpp>
-#include <definition_callbacks.hpp>
 
 LocalReader::~LocalReader()
 {

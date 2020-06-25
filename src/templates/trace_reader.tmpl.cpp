@@ -56,7 +56,7 @@ TraceReader::read_definitions()
     @otf2 for def in defs|global_defs:
 
     OTF2_GlobalDefReaderCallbacks_Set@@def.name@@Callback(def_callbacks, 
-                                                          definition::@@def.name@@Cb);
+                                                          definition::Global@@def.name@@Cb);
 
     @otf2 endfor
 

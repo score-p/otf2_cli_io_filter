@@ -1,6 +1,6 @@
 add_executable(test_trace_writer test_trace_writer.cpp 
                                  ${PROJECT_SOURCE_DIR}/src/trace_writer.cpp
-                                 ${PROJECT_SOURCE_DIR}/src/definition_callbacks.cpp
+                                 ${PROJECT_SOURCE_DIR}/src/global_callbacks.cpp
                                  ${PROJECT_SOURCE_DIR}/src/local_callbacks.cpp)
 
 target_link_libraries(test_trace_writer PUBLIC otf2::otf2)
@@ -14,7 +14,7 @@ add_executable(test_trace_reader test_trace_reader.cpp
                                  ${PROJECT_SOURCE_DIR}/src/trace_writer.cpp
                                  ${PROJECT_SOURCE_DIR}/src/trace_reader.cpp
                                  ${PROJECT_SOURCE_DIR}/src/local_reader.cpp
-                                 ${PROJECT_SOURCE_DIR}/src/definition_callbacks.cpp
+                                 ${PROJECT_SOURCE_DIR}/src/global_callbacks.cpp
                                  ${PROJECT_SOURCE_DIR}/src/local_callbacks.cpp)
 
 target_link_libraries(test_trace_reader PUBLIC otf2::otf2)

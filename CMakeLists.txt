@@ -24,14 +24,14 @@ macro(generate_otf2 target_name infile outfile)
 endmacro()
 
 SET(TEMPLATE_HPP_FILES
-    "definition_callbacks.tmpl.hpp"
+    "global_callbacks.tmpl.hpp"
     "local_callbacks.tmpl.hpp"
     "otf2_writer.tmpl.hpp"
     "trace_writer.tmpl.hpp"
 )
 
 SET(TEMPLATE_CPP_FILES
-    "definition_callbacks.tmpl.cpp"
+    "global_callbacks.tmpl.cpp"
     "local_callbacks.tmpl.cpp"
     "trace_writer.tmpl.cpp"
     "trace_reader.tmpl.cpp"
