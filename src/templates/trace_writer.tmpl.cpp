@@ -55,7 +55,7 @@ TraceWriter::~TraceWriter() {
 @otf2 for def in defs|global_defs:
 
 void
-TraceWriter::write@@def.name@@(@@def.funcargs(leading_comma=False)@@)
+TraceWriter::handle@@def.name@@(@@def.funcargs(leading_comma=False)@@)
 {
     OTF2_GlobalDefWriter_Write@@def.name@@(m_def_writer@@def.callargs()@@);
     @otf2  if def.name == 'Location':
@@ -75,13 +75,13 @@ TraceWriter::write@@def.name@@(@@def.funcargs(leading_comma=False)@@)
 @otf2 for event in events:
 
 void
-TraceWriter::write@@event.name@@Event(OTF2_LocationRef    location,
+TraceWriter::handle@@event.name@@Event(OTF2_LocationRef    location,
                                       OTF2_TimeStamp      time,
                                       OTF2_AttributeList* attributes@@event.funcargs()@@)
 {
     OTF2_EvtWriter_@@event.name@@(m_event_writer[location].get(),
                                   attributes,
-                                  time@@event.callargs()@@);                                  
+                                  time@@event.callargs()@@);
 }
 
 @otf2 endfor

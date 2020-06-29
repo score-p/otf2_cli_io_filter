@@ -26,7 +26,7 @@ endmacro()
 SET(TEMPLATE_HPP_FILES
     "global_callbacks.tmpl.hpp"
     "local_callbacks.tmpl.hpp"
-    "otf2_writer.tmpl.hpp"
+    "otf2_handler.tmpl.hpp"
     "trace_writer.tmpl.hpp"
 )
 

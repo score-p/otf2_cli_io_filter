@@ -11,7 +11,7 @@ extern "C"
     #include <otf2/otf2.h>
 }
 
-#include "otf2_writer.hpp"
+#include "otf2_handler.hpp"
 
 using archive_deleter = std::function<void (OTF2_Archive *)>;
 using archive_ptr = std::unique_ptr<OTF2_Archive, archive_deleter>;
@@ -19,7 +19,7 @@ using archive_ptr = std::unique_ptr<OTF2_Archive, archive_deleter>;
 using event_writer_deleter = std::function<void (OTF2_EvtWriter *)>;
 using event_writer_ptr = std::unique_ptr<OTF2_EvtWriter, event_writer_deleter>;
 
-class TraceWriter: public Otf2Writer {
+class TraceWriter: public Otf2Handler {
   public:
     /*
      * Initialize OTF2 archive, event and definition writer.
@@ -32,17 +32,17 @@ class TraceWriter: public Otf2Writer {
     @otf2 for def in defs|global_defs:
 
     virtual void
-    write@@def.name@@(@@def.funcargs(leading_comma=False)@@) override;
+    handle@@def.name@@(@@def.funcargs(leading_comma=False)@@) override;
 
     @otf2 endfor
- 
+
     @otf2 for event in events:
 
     virtual void
-    write@@event.name@@Event(OTF2_LocationRef    location,
+    handle@@event.name@@Event(OTF2_LocationRef    location,
                              OTF2_TimeStamp      time,
                              OTF2_AttributeList* attributes@@event.funcargs()@@) override;
-    
+
     @otf2 endfor
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;

@@ -8,7 +8,7 @@
 #include <thread>
 
 #include <global_callbacks.hpp>
-#include <otf2_writer.hpp>
+#include <otf2_handler.hpp>
 
 extern "C" {
 #include <otf2/otf2.h>
@@ -19,19 +19,19 @@ using reader_ptr = std::unique_ptr<OTF2_Reader, reader_deleter>;
 
 class TraceReader {
   public:
-    TraceReader(const std::string &path, Otf2Writer &writer,
+    TraceReader(const std::string &path, Otf2Handler &writer,
                 size_t nthreads = std::thread::hardware_concurrency());
 
     void read();
     void count() { m_def_count++; }
-    inline Otf2Writer &writer() { return m_writer; }
+    inline Otf2Handler &writer() { return m_writer; }
 
   private:
     std::size_t m_def_count = 0;
 
     void read_definitions();
 
-    Otf2Writer &m_writer;
+    Otf2Handler &m_writer;
     reader_ptr m_reader;
     std::size_t m_location_count;
     std::size_t m_thread_count;

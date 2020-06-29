@@ -5,7 +5,7 @@
 #include <trace_reader.hpp>
 
 TraceReader::TraceReader(const std::string &path,
-                         Otf2Writer & writer,
+                         Otf2Handler & writer,
                          size_t nthreads)
 :m_writer(writer),
 m_reader(OTF2_Reader_Open(path.c_str()), OTF2_Reader_Close),
@@ -49,13 +49,13 @@ void
 TraceReader::read_definitions()
 {
     OTF2_GlobalDefReader * global_def_reader = OTF2_Reader_GetGlobalDefReader(m_reader.get());
-    
+
     // TODO unique pointer
     OTF2_GlobalDefReaderCallbacks* def_callbacks = OTF2_GlobalDefReaderCallbacks_New();
 
     @otf2 for def in defs|global_defs:
 
-    OTF2_GlobalDefReaderCallbacks_Set@@def.name@@Callback(def_callbacks, 
+    OTF2_GlobalDefReaderCallbacks_Set@@def.name@@Callback(def_callbacks,
                                                           definition::Global@@def.name@@Cb);
 
     @otf2 endfor
@@ -64,14 +64,14 @@ TraceReader::read_definitions()
                                            global_def_reader,
                                            def_callbacks,
                                            this);
-    
+
     OTF2_GlobalDefReaderCallbacks_Delete(def_callbacks);
-   
+
     uint64_t definitions_read = 0;
     OTF2_Reader_ReadAllGlobalDefinitions(m_reader.get(),
                                          global_def_reader,
                                          &definitions_read);
-    
+
     OTF2_Reader_CloseGlobalDefReader(m_reader.get(),
                                      global_def_reader);
-}            
+}

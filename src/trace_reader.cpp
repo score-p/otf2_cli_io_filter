@@ -4,7 +4,7 @@
 #include <local_reader.hpp>
 #include <trace_reader.hpp>
 
-TraceReader::TraceReader(const std::string &path, Otf2Writer &writer,
+TraceReader::TraceReader(const std::string &path, Otf2Handler &writer,
                          size_t nthreads)
     : m_writer(writer),
       m_reader(OTF2_Reader_Open(path.c_str()), OTF2_Reader_Close),
