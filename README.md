@@ -8,6 +8,4 @@
 ~> make clangformat
 ```
 ## TODOs
-* Change `definition_callbacks` to `global_callbacks`
-* Add global event callbacks
-* Add local definition writer
+* Add tests
