@@ -43,7 +43,7 @@ TraceWriter::TraceWriter(const std::string &path)
 
 TraceWriter::~TraceWriter() {
     OTF2_Archive_CloseDefFiles(m_archive.get());
-    for(const auto & [location, dummy]: m_event_writer)
+    for(auto location: m_locations)
     {
         OTF2_DefWriter* def_writer = OTF2_Archive_GetDefWriter( m_archive.get(),
                                                                 location );
@@ -55,19 +55,24 @@ TraceWriter::~TraceWriter() {
 @otf2 for def in defs|global_defs:
 
 void
-TraceWriter::handle@@def.name@@(@@def.funcargs(leading_comma=False)@@)
+TraceWriter::handleGlobal@@def.name@@(@@def.funcargs(leading_comma=False)@@)
 {
     OTF2_GlobalDefWriter_Write@@def.name@@(m_def_writer@@def.callargs()@@);
     @otf2  if def.name == 'Location':
-    auto search = m_event_writer.find(self);
-    if(search == m_event_writer.end())
-    {
-        m_event_writer.emplace(self, event_writer_ptr(OTF2_Archive_GetEvtWriter(m_archive.get(), self),
-                                                        [this](OTF2_EvtWriter *writer) {
-                                                            delete_event_writer(writer, m_archive.get());
-                                                        }));
-    }
+    m_locations.insert(self);
     @otf2 endif
+}
+
+@otf2 endfor
+
+@otf2 for def in defs|local_defs:
+
+void
+TraceWriter::handleLocal@@def.name@@(OTF2_LocationRef readLocation,
+                                     @@def.funcargs(leading_comma=False)@@)
+{
+    auto * local_def_writer = OTF2_Archive_GetDefWriter(m_archive.get(), readLocation);
+    OTF2_DefWriter_Write@@def.name@@(local_def_writer@@def.callargs()@@);
 }
 
 @otf2 endfor
@@ -79,7 +84,8 @@ TraceWriter::handle@@event.name@@Event(OTF2_LocationRef    location,
                                       OTF2_TimeStamp      time,
                                       OTF2_AttributeList* attributes@@event.funcargs()@@)
 {
-    OTF2_EvtWriter_@@event.name@@(m_event_writer[location].get(),
+    auto * event_writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
+    OTF2_EvtWriter_@@event.name@@(event_writer,
                                   attributes,
                                   time@@event.callargs()@@);
 }

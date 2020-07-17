@@ -1,10 +1,12 @@
 #ifndef TRACE_WRITER_H
 #define TRACE_WRITER_H
 
+#include <cstddef>
 #include <memory>
+#include <otf2/OTF2_GeneralDefinitions.h>
 #include <string>
 #include <functional>
-#include <map>
+#include <unordered_set>
 
 extern "C"
 {
@@ -29,13 +31,30 @@ class TraceWriter: public Otf2Handler {
     TraceWriter(const std::string &path);
     virtual ~TraceWriter();
 
+    /*
+     * Handle global definitions
+     */
     @otf2 for def in defs|global_defs:
 
     virtual void
-    handle@@def.name@@(@@def.funcargs(leading_comma=False)@@) override;
+    handleGlobal@@def.name@@(@@def.funcargs(leading_comma=False)@@) override;
 
     @otf2 endfor
 
+    /*
+     * Handle local definitions
+     */
+    @otf2 for def in defs|local_defs:
+
+    virtual void
+    handleLocal@@def.name@@(OTF2_LocationRef readLocation,
+                            @@def.funcargs(leading_comma=False)@@) override;
+
+    @otf2 endfor
+
+    /*
+     * Handle events.
+     */
     @otf2 for event in events:
 
     virtual void
@@ -47,8 +66,8 @@ class TraceWriter: public Otf2Handler {
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;
     archive_ptr m_archive;
-    std::map<OTF2_LocationRef,event_writer_ptr> m_event_writer;
     OTF2_GlobalDefWriter* m_def_writer;
+    std::unordered_set<OTF2_LocationRef> m_locations;
 };
 
 #endif /* TRACE_WRITER_H */
