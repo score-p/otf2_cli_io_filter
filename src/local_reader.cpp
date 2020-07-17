@@ -1,13 +1,6 @@
 #include <local_callbacks.hpp>
 #include <local_reader.hpp>
 
-LocalReader::~LocalReader() {
-    if (nevents > 0) {
-        std::cout << "Read " << nevents << " events.\n";
-        std::cout << "Read " << nstring_defs << " string defs.\n";
-    }
-}
-
 void LocalReader::read_definitions(OTF2_Reader *reader,
                                    const std::vector<size_t> &locations) {
     bool successful_open_def_files =
@@ -128,6 +121,9 @@ void LocalReader::read_definitions(OTF2_Reader *reader,
                                              this);
             if (def_reader) {
                 uint64_t def_reads = 0;
+                // FIXME Assume to save state is not good
+                // but put all in a pair pointer is also not great
+                m_current_location = location;
                 OTF2_Reader_ReadAllLocalDefinitions(reader, def_reader,
                                                     &def_reads);
                 OTF2_Reader_CloseDefReader(reader, def_reader);

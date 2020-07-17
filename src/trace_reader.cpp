@@ -4,9 +4,9 @@
 #include <local_reader.hpp>
 #include <trace_reader.hpp>
 
-TraceReader::TraceReader(const std::string &path, Otf2Handler &writer,
+TraceReader::TraceReader(const std::string &path, Otf2Handler &handler,
                          size_t nthreads)
-    : m_writer(writer),
+    : m_handler(handler),
       m_reader(OTF2_Reader_Open(path.c_str()), OTF2_Reader_Close),
       m_location_count(0), m_thread_count(nthreads) {
     OTF2_Reader_SetSerialCollectiveCallbacks(m_reader.get());
@@ -32,7 +32,8 @@ void TraceReader::read() {
     for (size_t i = 0; i < thread_location_count.size(); i++) {
         auto thread_locations = std::vector<size_t>(
             src_begin, src_begin + thread_location_count[i]);
-        workers.emplace_back(LocalReader(), m_reader.get(), thread_locations);
+        workers.emplace_back(LocalReader(m_handler), m_reader.get(),
+                             thread_locations);
         src_begin += thread_location_count[i];
     }
     for (auto &w : workers) {
