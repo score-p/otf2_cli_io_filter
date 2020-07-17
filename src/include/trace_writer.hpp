@@ -1,10 +1,12 @@
 #ifndef TRACE_WRITER_H
 #define TRACE_WRITER_H
 
+#include <cstddef>
 #include <functional>
-#include <map>
 #include <memory>
+#include <otf2/OTF2_GeneralDefinitions.h>
 #include <string>
+#include <unordered_set>
 
 extern "C" {
 #include <otf2/otf2.h>
@@ -28,174 +30,400 @@ class TraceWriter : public Otf2Handler {
     TraceWriter(const std::string &path);
     virtual ~TraceWriter();
 
-    virtual void handleClockProperties(uint64_t timerResolution,
-                                       uint64_t globalOffset,
-                                       uint64_t traceLength) override;
+    /*
+     * Handle global definitions
+     */
 
-    virtual void handleParadigm(OTF2_Paradigm paradigm, OTF2_StringRef name,
-                                OTF2_ParadigmClass paradigmClass) override;
+    virtual void handleGlobalClockProperties(uint64_t timerResolution,
+                                             uint64_t globalOffset,
+                                             uint64_t traceLength) override;
 
-    virtual void handleParadigmProperty(OTF2_Paradigm paradigm,
-                                        OTF2_ParadigmProperty property,
-                                        OTF2_Type type,
-                                        OTF2_AttributeValue value) override;
+    virtual void
+    handleGlobalParadigm(OTF2_Paradigm paradigm, OTF2_StringRef name,
+                         OTF2_ParadigmClass paradigmClass) override;
 
-    virtual void handleIoParadigm(
+    virtual void
+    handleGlobalParadigmProperty(OTF2_Paradigm paradigm,
+                                 OTF2_ParadigmProperty property, OTF2_Type type,
+                                 OTF2_AttributeValue value) override;
+
+    virtual void handleGlobalIoParadigm(
         OTF2_IoParadigmRef self, OTF2_StringRef identification,
         OTF2_StringRef name, OTF2_IoParadigmClass ioParadigmClass,
         OTF2_IoParadigmFlag ioParadigmFlags, uint8_t numberOfProperties,
         const OTF2_IoParadigmProperty *properties, const OTF2_Type *types,
         const OTF2_AttributeValue *values) override;
 
-    virtual void handleString(OTF2_StringRef self, const char *string) override;
+    virtual void handleGlobalString(OTF2_StringRef self,
+                                    const char *string) override;
 
-    virtual void handleAttribute(OTF2_AttributeRef self, OTF2_StringRef name,
-                                 OTF2_StringRef description,
-                                 OTF2_Type type) override;
-
-    virtual void handleSystemTreeNode(OTF2_SystemTreeNodeRef self,
-                                      OTF2_StringRef name,
-                                      OTF2_StringRef className,
-                                      OTF2_SystemTreeNodeRef parent) override;
+    virtual void handleGlobalAttribute(OTF2_AttributeRef self,
+                                       OTF2_StringRef name,
+                                       OTF2_StringRef description,
+                                       OTF2_Type type) override;
 
     virtual void
-    handleLocationGroup(OTF2_LocationGroupRef self, OTF2_StringRef name,
-                        OTF2_LocationGroupType locationGroupType,
-                        OTF2_SystemTreeNodeRef systemTreeParent) override;
-
-    virtual void handleLocation(OTF2_LocationRef self, OTF2_StringRef name,
-                                OTF2_LocationType locationType,
-                                uint64_t numberOfEvents,
-                                OTF2_LocationGroupRef locationGroup) override;
+    handleGlobalSystemTreeNode(OTF2_SystemTreeNodeRef self, OTF2_StringRef name,
+                               OTF2_StringRef className,
+                               OTF2_SystemTreeNodeRef parent) override;
 
     virtual void
-    handleRegion(OTF2_RegionRef self, OTF2_StringRef name,
-                 OTF2_StringRef canonicalName, OTF2_StringRef description,
-                 OTF2_RegionRole regionRole, OTF2_Paradigm paradigm,
-                 OTF2_RegionFlag regionFlags, OTF2_StringRef sourceFile,
-                 uint32_t beginLineNumber, uint32_t endLineNumber) override;
-
-    virtual void handleCallsite(OTF2_CallsiteRef self,
-                                OTF2_StringRef sourceFile, uint32_t lineNumber,
-                                OTF2_RegionRef enteredRegion,
-                                OTF2_RegionRef leftRegion) override;
-
-    virtual void handleCallpath(OTF2_CallpathRef self, OTF2_CallpathRef parent,
-                                OTF2_RegionRef region) override;
-
-    virtual void handleGroup(OTF2_GroupRef self, OTF2_StringRef name,
-                             OTF2_GroupType groupType, OTF2_Paradigm paradigm,
-                             OTF2_GroupFlag groupFlags,
-                             uint32_t numberOfMembers,
-                             const uint64_t *members) override;
+    handleGlobalLocationGroup(OTF2_LocationGroupRef self, OTF2_StringRef name,
+                              OTF2_LocationGroupType locationGroupType,
+                              OTF2_SystemTreeNodeRef systemTreeParent) override;
 
     virtual void
-    handleMetricMember(OTF2_MetricMemberRef self, OTF2_StringRef name,
-                       OTF2_StringRef description, OTF2_MetricType metricType,
-                       OTF2_MetricMode metricMode, OTF2_Type valueType,
-                       OTF2_Base base, int64_t exponent,
-                       OTF2_StringRef unit) override;
-
-    virtual void handleMetricClass(OTF2_MetricRef self, uint8_t numberOfMetrics,
-                                   const OTF2_MetricMemberRef *metricMembers,
-                                   OTF2_MetricOccurrence metricOccurrence,
-                                   OTF2_RecorderKind recorderKind) override;
-
-    virtual void handleMetricInstance(OTF2_MetricRef self,
-                                      OTF2_MetricRef metricClass,
-                                      OTF2_LocationRef recorder,
-                                      OTF2_MetricScope metricScope,
-                                      uint64_t scope) override;
-
-    virtual void handleComm(OTF2_CommRef self, OTF2_StringRef name,
-                            OTF2_GroupRef group, OTF2_CommRef parent) override;
-
-    virtual void handleParameter(OTF2_ParameterRef self, OTF2_StringRef name,
-                                 OTF2_ParameterType parameterType) override;
-
-    virtual void handleRmaWin(OTF2_RmaWinRef self, OTF2_StringRef name,
-                              OTF2_CommRef comm) override;
-
-    virtual void handleMetricClassRecorder(OTF2_MetricRef metric,
-                                           OTF2_LocationRef recorder) override;
+    handleGlobalLocation(OTF2_LocationRef self, OTF2_StringRef name,
+                         OTF2_LocationType locationType,
+                         uint64_t numberOfEvents,
+                         OTF2_LocationGroupRef locationGroup) override;
 
     virtual void
-    handleSystemTreeNodeProperty(OTF2_SystemTreeNodeRef systemTreeNode,
-                                 OTF2_StringRef name, OTF2_Type type,
+    handleGlobalRegion(OTF2_RegionRef self, OTF2_StringRef name,
+                       OTF2_StringRef canonicalName, OTF2_StringRef description,
+                       OTF2_RegionRole regionRole, OTF2_Paradigm paradigm,
+                       OTF2_RegionFlag regionFlags, OTF2_StringRef sourceFile,
+                       uint32_t beginLineNumber,
+                       uint32_t endLineNumber) override;
+
+    virtual void handleGlobalCallsite(OTF2_CallsiteRef self,
+                                      OTF2_StringRef sourceFile,
+                                      uint32_t lineNumber,
+                                      OTF2_RegionRef enteredRegion,
+                                      OTF2_RegionRef leftRegion) override;
+
+    virtual void handleGlobalCallpath(OTF2_CallpathRef self,
+                                      OTF2_CallpathRef parent,
+                                      OTF2_RegionRef region) override;
+
+    virtual void handleGlobalGroup(OTF2_GroupRef self, OTF2_StringRef name,
+                                   OTF2_GroupType groupType,
+                                   OTF2_Paradigm paradigm,
+                                   OTF2_GroupFlag groupFlags,
+                                   uint32_t numberOfMembers,
+                                   const uint64_t *members) override;
+
+    virtual void handleGlobalMetricMember(
+        OTF2_MetricMemberRef self, OTF2_StringRef name,
+        OTF2_StringRef description, OTF2_MetricType metricType,
+        OTF2_MetricMode metricMode, OTF2_Type valueType, OTF2_Base base,
+        int64_t exponent, OTF2_StringRef unit) override;
+
+    virtual void
+    handleGlobalMetricClass(OTF2_MetricRef self, uint8_t numberOfMetrics,
+                            const OTF2_MetricMemberRef *metricMembers,
+                            OTF2_MetricOccurrence metricOccurrence,
+                            OTF2_RecorderKind recorderKind) override;
+
+    virtual void handleGlobalMetricInstance(OTF2_MetricRef self,
+                                            OTF2_MetricRef metricClass,
+                                            OTF2_LocationRef recorder,
+                                            OTF2_MetricScope metricScope,
+                                            uint64_t scope) override;
+
+    virtual void handleGlobalComm(OTF2_CommRef self, OTF2_StringRef name,
+                                  OTF2_GroupRef group,
+                                  OTF2_CommRef parent) override;
+
+    virtual void
+    handleGlobalParameter(OTF2_ParameterRef self, OTF2_StringRef name,
+                          OTF2_ParameterType parameterType) override;
+
+    virtual void handleGlobalRmaWin(OTF2_RmaWinRef self, OTF2_StringRef name,
+                                    OTF2_CommRef comm) override;
+
+    virtual void
+    handleGlobalMetricClassRecorder(OTF2_MetricRef metric,
+                                    OTF2_LocationRef recorder) override;
+
+    virtual void
+    handleGlobalSystemTreeNodeProperty(OTF2_SystemTreeNodeRef systemTreeNode,
+                                       OTF2_StringRef name, OTF2_Type type,
+                                       OTF2_AttributeValue value) override;
+
+    virtual void handleGlobalSystemTreeNodeDomain(
+        OTF2_SystemTreeNodeRef systemTreeNode,
+        OTF2_SystemTreeDomain systemTreeDomain) override;
+
+    virtual void
+    handleGlobalLocationGroupProperty(OTF2_LocationGroupRef locationGroup,
+                                      OTF2_StringRef name, OTF2_Type type,
+                                      OTF2_AttributeValue value) override;
+
+    virtual void
+    handleGlobalLocationProperty(OTF2_LocationRef location, OTF2_StringRef name,
+                                 OTF2_Type type,
                                  OTF2_AttributeValue value) override;
 
     virtual void
-    handleSystemTreeNodeDomain(OTF2_SystemTreeNodeRef systemTreeNode,
-                               OTF2_SystemTreeDomain systemTreeDomain) override;
+    handleGlobalCartDimension(OTF2_CartDimensionRef self, OTF2_StringRef name,
+                              uint32_t size,
+                              OTF2_CartPeriodicity cartPeriodicity) override;
+
+    virtual void handleGlobalCartTopology(
+        OTF2_CartTopologyRef self, OTF2_StringRef name,
+        OTF2_CommRef communicator, uint8_t numberOfDimensions,
+        const OTF2_CartDimensionRef *cartDimensions) override;
 
     virtual void
-    handleLocationGroupProperty(OTF2_LocationGroupRef locationGroup,
-                                OTF2_StringRef name, OTF2_Type type,
-                                OTF2_AttributeValue value) override;
+    handleGlobalCartCoordinate(OTF2_CartTopologyRef cartTopology, uint32_t rank,
+                               uint8_t numberOfDimensions,
+                               const uint32_t *coordinates) override;
 
-    virtual void handleLocationProperty(OTF2_LocationRef location,
-                                        OTF2_StringRef name, OTF2_Type type,
-                                        OTF2_AttributeValue value) override;
-
-    virtual void
-    handleCartDimension(OTF2_CartDimensionRef self, OTF2_StringRef name,
-                        uint32_t size,
-                        OTF2_CartPeriodicity cartPeriodicity) override;
+    virtual void handleGlobalSourceCodeLocation(OTF2_SourceCodeLocationRef self,
+                                                OTF2_StringRef file,
+                                                uint32_t lineNumber) override;
 
     virtual void
-    handleCartTopology(OTF2_CartTopologyRef self, OTF2_StringRef name,
-                       OTF2_CommRef communicator, uint8_t numberOfDimensions,
-                       const OTF2_CartDimensionRef *cartDimensions) override;
-
-    virtual void handleCartCoordinate(OTF2_CartTopologyRef cartTopology,
-                                      uint32_t rank, uint8_t numberOfDimensions,
-                                      const uint32_t *coordinates) override;
-
-    virtual void handleSourceCodeLocation(OTF2_SourceCodeLocationRef self,
-                                          OTF2_StringRef file,
-                                          uint32_t lineNumber) override;
+    handleGlobalCallingContext(OTF2_CallingContextRef self,
+                               OTF2_RegionRef region,
+                               OTF2_SourceCodeLocationRef sourceCodeLocation,
+                               OTF2_CallingContextRef parent) override;
 
     virtual void
-    handleCallingContext(OTF2_CallingContextRef self, OTF2_RegionRef region,
-                         OTF2_SourceCodeLocationRef sourceCodeLocation,
-                         OTF2_CallingContextRef parent) override;
+    handleGlobalCallingContextProperty(OTF2_CallingContextRef callingContext,
+                                       OTF2_StringRef name, OTF2_Type type,
+                                       OTF2_AttributeValue value) override;
 
-    virtual void
-    handleCallingContextProperty(OTF2_CallingContextRef callingContext,
-                                 OTF2_StringRef name, OTF2_Type type,
-                                 OTF2_AttributeValue value) override;
-
-    virtual void handleInterruptGenerator(
+    virtual void handleGlobalInterruptGenerator(
         OTF2_InterruptGeneratorRef self, OTF2_StringRef name,
         OTF2_InterruptGeneratorMode interruptGeneratorMode, OTF2_Base base,
         int64_t exponent, uint64_t period) override;
 
-    virtual void handleIoFileProperty(OTF2_IoFileRef ioFile,
+    virtual void handleGlobalIoFileProperty(OTF2_IoFileRef ioFile,
+                                            OTF2_StringRef name, OTF2_Type type,
+                                            OTF2_AttributeValue value) override;
+
+    virtual void
+    handleGlobalIoRegularFile(OTF2_IoFileRef self, OTF2_StringRef name,
+                              OTF2_SystemTreeNodeRef scope) override;
+
+    virtual void handleGlobalIoDirectory(OTF2_IoFileRef self,
+                                         OTF2_StringRef name,
+                                         OTF2_SystemTreeNodeRef scope) override;
+
+    virtual void handleGlobalIoHandle(OTF2_IoHandleRef self,
+                                      OTF2_StringRef name, OTF2_IoFileRef file,
+                                      OTF2_IoParadigmRef ioParadigm,
+                                      OTF2_IoHandleFlag ioHandleFlags,
+                                      OTF2_CommRef comm,
+                                      OTF2_IoHandleRef parent) override;
+
+    virtual void
+    handleGlobalIoPreCreatedHandleState(OTF2_IoHandleRef ioHandle,
+                                        OTF2_IoAccessMode mode,
+                                        OTF2_IoStatusFlag statusFlags) override;
+
+    virtual void
+    handleGlobalCallpathParameter(OTF2_CallpathRef callpath,
+                                  OTF2_ParameterRef parameter, OTF2_Type type,
+                                  OTF2_AttributeValue value) override;
+
+    /*
+     * Handle local definitions
+     */
+
+    virtual void handleLocalMappingTable(OTF2_LocationRef readLocation,
+                                         OTF2_MappingType mappingType,
+                                         const OTF2_IdMap *idMap) override;
+
+    virtual void handleLocalClockOffset(OTF2_LocationRef readLocation,
+                                        OTF2_TimeStamp time, int64_t offset,
+                                        double standardDeviation) override;
+
+    virtual void handleLocalString(OTF2_LocationRef readLocation,
+                                   OTF2_StringRef self,
+                                   const char *string) override;
+
+    virtual void handleLocalAttribute(OTF2_LocationRef readLocation,
+                                      OTF2_AttributeRef self,
+                                      OTF2_StringRef name,
+                                      OTF2_StringRef description,
+                                      OTF2_Type type) override;
+
+    virtual void
+    handleLocalSystemTreeNode(OTF2_LocationRef readLocation,
+                              OTF2_SystemTreeNodeRef self, OTF2_StringRef name,
+                              OTF2_StringRef className,
+                              OTF2_SystemTreeNodeRef parent) override;
+
+    virtual void
+    handleLocalLocationGroup(OTF2_LocationRef readLocation,
+                             OTF2_LocationGroupRef self, OTF2_StringRef name,
+                             OTF2_LocationGroupType locationGroupType,
+                             OTF2_SystemTreeNodeRef systemTreeParent) override;
+
+    virtual void
+    handleLocalLocation(OTF2_LocationRef readLocation, OTF2_LocationRef self,
+                        OTF2_StringRef name, OTF2_LocationType locationType,
+                        uint64_t numberOfEvents,
+                        OTF2_LocationGroupRef locationGroup) override;
+
+    virtual void
+    handleLocalRegion(OTF2_LocationRef readLocation, OTF2_RegionRef self,
+                      OTF2_StringRef name, OTF2_StringRef canonicalName,
+                      OTF2_StringRef description, OTF2_RegionRole regionRole,
+                      OTF2_Paradigm paradigm, OTF2_RegionFlag regionFlags,
+                      OTF2_StringRef sourceFile, uint32_t beginLineNumber,
+                      uint32_t endLineNumber) override;
+
+    virtual void handleLocalCallsite(OTF2_LocationRef readLocation,
+                                     OTF2_CallsiteRef self,
+                                     OTF2_StringRef sourceFile,
+                                     uint32_t lineNumber,
+                                     OTF2_RegionRef enteredRegion,
+                                     OTF2_RegionRef leftRegion) override;
+
+    virtual void handleLocalCallpath(OTF2_LocationRef readLocation,
+                                     OTF2_CallpathRef self,
+                                     OTF2_CallpathRef parent,
+                                     OTF2_RegionRef region) override;
+
+    virtual void handleLocalGroup(OTF2_LocationRef readLocation,
+                                  OTF2_GroupRef self, OTF2_StringRef name,
+                                  OTF2_GroupType groupType,
+                                  OTF2_Paradigm paradigm,
+                                  OTF2_GroupFlag groupFlags,
+                                  uint32_t numberOfMembers,
+                                  const uint64_t *members) override;
+
+    virtual void handleLocalMetricMember(
+        OTF2_LocationRef readLocation, OTF2_MetricMemberRef self,
+        OTF2_StringRef name, OTF2_StringRef description,
+        OTF2_MetricType metricType, OTF2_MetricMode metricMode,
+        OTF2_Type valueType, OTF2_Base base, int64_t exponent,
+        OTF2_StringRef unit) override;
+
+    virtual void
+    handleLocalMetricClass(OTF2_LocationRef readLocation, OTF2_MetricRef self,
+                           uint8_t numberOfMetrics,
+                           const OTF2_MetricMemberRef *metricMembers,
+                           OTF2_MetricOccurrence metricOccurrence,
+                           OTF2_RecorderKind recorderKind) override;
+
+    virtual void handleLocalMetricInstance(OTF2_LocationRef readLocation,
+                                           OTF2_MetricRef self,
+                                           OTF2_MetricRef metricClass,
+                                           OTF2_LocationRef recorder,
+                                           OTF2_MetricScope metricScope,
+                                           uint64_t scope) override;
+
+    virtual void handleLocalComm(OTF2_LocationRef readLocation,
+                                 OTF2_CommRef self, OTF2_StringRef name,
+                                 OTF2_GroupRef group,
+                                 OTF2_CommRef parent) override;
+
+    virtual void
+    handleLocalParameter(OTF2_LocationRef readLocation, OTF2_ParameterRef self,
+                         OTF2_StringRef name,
+                         OTF2_ParameterType parameterType) override;
+
+    virtual void handleLocalRmaWin(OTF2_LocationRef readLocation,
+                                   OTF2_RmaWinRef self, OTF2_StringRef name,
+                                   OTF2_CommRef comm) override;
+
+    virtual void
+    handleLocalMetricClassRecorder(OTF2_LocationRef readLocation,
+                                   OTF2_MetricRef metric,
+                                   OTF2_LocationRef recorder) override;
+
+    virtual void
+    handleLocalSystemTreeNodeProperty(OTF2_LocationRef readLocation,
+                                      OTF2_SystemTreeNodeRef systemTreeNode,
                                       OTF2_StringRef name, OTF2_Type type,
                                       OTF2_AttributeValue value) override;
 
-    virtual void handleIoRegularFile(OTF2_IoFileRef self, OTF2_StringRef name,
-                                     OTF2_SystemTreeNodeRef scope) override;
-
-    virtual void handleIoDirectory(OTF2_IoFileRef self, OTF2_StringRef name,
-                                   OTF2_SystemTreeNodeRef scope) override;
-
-    virtual void handleIoHandle(OTF2_IoHandleRef self, OTF2_StringRef name,
-                                OTF2_IoFileRef file,
-                                OTF2_IoParadigmRef ioParadigm,
-                                OTF2_IoHandleFlag ioHandleFlags,
-                                OTF2_CommRef comm,
-                                OTF2_IoHandleRef parent) override;
+    virtual void handleLocalSystemTreeNodeDomain(
+        OTF2_LocationRef readLocation, OTF2_SystemTreeNodeRef systemTreeNode,
+        OTF2_SystemTreeDomain systemTreeDomain) override;
 
     virtual void
-    handleIoPreCreatedHandleState(OTF2_IoHandleRef ioHandle,
-                                  OTF2_IoAccessMode mode,
-                                  OTF2_IoStatusFlag statusFlags) override;
+    handleLocalLocationGroupProperty(OTF2_LocationRef readLocation,
+                                     OTF2_LocationGroupRef locationGroup,
+                                     OTF2_StringRef name, OTF2_Type type,
+                                     OTF2_AttributeValue value) override;
 
-    virtual void handleCallpathParameter(OTF2_CallpathRef callpath,
-                                         OTF2_ParameterRef parameter,
-                                         OTF2_Type type,
-                                         OTF2_AttributeValue value) override;
+    virtual void
+    handleLocalLocationProperty(OTF2_LocationRef readLocation,
+                                OTF2_LocationRef location, OTF2_StringRef name,
+                                OTF2_Type type,
+                                OTF2_AttributeValue value) override;
+
+    virtual void
+    handleLocalCartDimension(OTF2_LocationRef readLocation,
+                             OTF2_CartDimensionRef self, OTF2_StringRef name,
+                             uint32_t size,
+                             OTF2_CartPeriodicity cartPeriodicity) override;
+
+    virtual void handleLocalCartTopology(
+        OTF2_LocationRef readLocation, OTF2_CartTopologyRef self,
+        OTF2_StringRef name, OTF2_CommRef communicator,
+        uint8_t numberOfDimensions,
+        const OTF2_CartDimensionRef *cartDimensions) override;
+
+    virtual void
+    handleLocalCartCoordinate(OTF2_LocationRef readLocation,
+                              OTF2_CartTopologyRef cartTopology, uint32_t rank,
+                              uint8_t numberOfDimensions,
+                              const uint32_t *coordinates) override;
+
+    virtual void handleLocalSourceCodeLocation(OTF2_LocationRef readLocation,
+                                               OTF2_SourceCodeLocationRef self,
+                                               OTF2_StringRef file,
+                                               uint32_t lineNumber) override;
+
+    virtual void handleLocalCallingContext(
+        OTF2_LocationRef readLocation, OTF2_CallingContextRef self,
+        OTF2_RegionRef region, OTF2_SourceCodeLocationRef sourceCodeLocation,
+        OTF2_CallingContextRef parent) override;
+
+    virtual void
+    handleLocalCallingContextProperty(OTF2_LocationRef readLocation,
+                                      OTF2_CallingContextRef callingContext,
+                                      OTF2_StringRef name, OTF2_Type type,
+                                      OTF2_AttributeValue value) override;
+
+    virtual void handleLocalInterruptGenerator(
+        OTF2_LocationRef readLocation, OTF2_InterruptGeneratorRef self,
+        OTF2_StringRef name, OTF2_InterruptGeneratorMode interruptGeneratorMode,
+        OTF2_Base base, int64_t exponent, uint64_t period) override;
+
+    virtual void handleLocalIoFileProperty(OTF2_LocationRef readLocation,
+                                           OTF2_IoFileRef ioFile,
+                                           OTF2_StringRef name, OTF2_Type type,
+                                           OTF2_AttributeValue value) override;
+
+    virtual void
+    handleLocalIoRegularFile(OTF2_LocationRef readLocation, OTF2_IoFileRef self,
+                             OTF2_StringRef name,
+                             OTF2_SystemTreeNodeRef scope) override;
+
+    virtual void handleLocalIoDirectory(OTF2_LocationRef readLocation,
+                                        OTF2_IoFileRef self,
+                                        OTF2_StringRef name,
+                                        OTF2_SystemTreeNodeRef scope) override;
+
+    virtual void handleLocalIoHandle(OTF2_LocationRef readLocation,
+                                     OTF2_IoHandleRef self, OTF2_StringRef name,
+                                     OTF2_IoFileRef file,
+                                     OTF2_IoParadigmRef ioParadigm,
+                                     OTF2_IoHandleFlag ioHandleFlags,
+                                     OTF2_CommRef comm,
+                                     OTF2_IoHandleRef parent) override;
+
+    virtual void handleLocalIoPreCreatedHandleState(
+        OTF2_LocationRef readLocation, OTF2_IoHandleRef ioHandle,
+        OTF2_IoAccessMode mode, OTF2_IoStatusFlag statusFlags) override;
+
+    virtual void
+    handleLocalCallpathParameter(OTF2_LocationRef readLocation,
+                                 OTF2_CallpathRef callpath,
+                                 OTF2_ParameterRef parameter, OTF2_Type type,
+                                 OTF2_AttributeValue value) override;
+
+    /*
+     * Handle events.
+     */
 
     virtual void handleBufferFlushEvent(OTF2_LocationRef location,
                                         OTF2_TimeStamp time,
@@ -631,8 +859,8 @@ class TraceWriter : public Otf2Handler {
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;
     archive_ptr m_archive;
-    std::map<OTF2_LocationRef, event_writer_ptr> m_event_writer;
     OTF2_GlobalDefWriter *m_def_writer;
+    std::unordered_set<OTF2_LocationRef> m_locations;
 };
 
 #endif /* TRACE_WRITER_H */

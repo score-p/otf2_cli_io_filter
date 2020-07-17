@@ -4,7 +4,7 @@
 namespace event
 {
     @otf2 for event in events:
-    
+
     OTF2_CallbackCode
     Local@@event.name@@Cb(OTF2_LocationRef    location,
                           OTF2_TimeStamp      time,
@@ -12,11 +12,13 @@ namespace event
                           void*               userData,
                           OTF2_AttributeList* attributes@@event.funcargs()@@)
     {
-        // auto tr = static_cast<LocalReader *>(userData);
-        /*tr->writer().write@@event.name@@Event(location,
-                                              time,
-                                              attributes@@event.callargs()@@);*/
-        return OTF2_CALLBACK_SUCCESS;                                               
+        auto tr = static_cast<LocalReader *>(userData);
+
+        tr->handler().handle@@event.name@@Event(location,
+                                                time,
+                                                attributes@@event.callargs()@@);
+
+        return OTF2_CALLBACK_SUCCESS;
     }
 
     @otf2 endfor
@@ -29,11 +31,12 @@ namespace definition
     OTF2_CallbackCode
     Local@@def.name@@Cb(void* userData @@def.funcargs()@@)
     {
-        // auto tr = static_cast<LocalReader *>(userData);
-        /*tr->writer().write@@def.name@@Def(location,
-                                            attributes@@def.callargs()@@);*/
-        return OTF2_CALLBACK_SUCCESS;   
+        auto tr = static_cast<LocalReader *>(userData);
+        size_t self_location = tr->current_location();
+
+        tr->handler().handleLocal@@def.name@@(self_location@@def.callargs()@@);
+        return OTF2_CALLBACK_SUCCESS;
     }
-    
+
     @otf2 endfor
 }

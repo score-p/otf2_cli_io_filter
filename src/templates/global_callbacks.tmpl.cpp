@@ -16,7 +16,7 @@ namespace definition
         }
         tr->m_locations.push_back(self);
         @otf2 endif
-        tr->count();
+        tr->handler().handleGlobal@@def.name@@(@@def.callargs(leading_comma=False)@@);
         return OTF2_CALLBACK_SUCCESS;
     }
 

@@ -19,19 +19,19 @@ using reader_ptr = std::unique_ptr<OTF2_Reader, reader_deleter>;
 
 class TraceReader {
   public:
-    TraceReader(const std::string &path, Otf2Handler &writer,
+    TraceReader(const std::string &path, Otf2Handler &handler,
                 size_t nthreads = std::thread::hardware_concurrency());
 
     void read();
     void count() { m_def_count++; }
-    inline Otf2Handler &writer() { return m_writer; }
+    inline Otf2Handler &handler() { return m_handler; }
 
   private:
     std::size_t m_def_count = 0;
 
     void read_definitions();
 
-    Otf2Handler &m_writer;
+    Otf2Handler &m_handler;
     reader_ptr m_reader;
     std::size_t m_location_count;
     std::size_t m_thread_count;
