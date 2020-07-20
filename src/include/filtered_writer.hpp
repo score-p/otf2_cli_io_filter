@@ -3,9 +3,8 @@
 
 #include "trace_writer.hpp"
 
-class FilteredWriter : public TraceWriter
-{
-public:
+class FilteredWriter : public TraceWriter {
+  public:
     FilteredWriter(const std::string &path);
 };
 

@@ -3,3 +3,4 @@ compile_commands.json
 BUILD
 b_eff_io_4_procs
 *.exe
+.clangd
