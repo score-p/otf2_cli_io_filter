@@ -7,5 +7,7 @@
 ```sh
 ~> make clangformat
 ```
-## TODOs
-* Add tests
+## Tests
+```sh
+~> make test
+```
