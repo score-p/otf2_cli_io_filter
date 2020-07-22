@@ -29,6 +29,7 @@ SET(TEMPLATE_HPP_FILES
     "local_callbacks.tmpl.hpp"
     "otf2_handler.tmpl.hpp"
     "trace_writer.tmpl.hpp"
+    "filter.tmpl.hpp"
 )
 
 SET(TEMPLATE_CPP_FILES

@@ -6,6 +6,7 @@ set(OTF2_FILTER_FMT_SRC
     include/otf2_handler.hpp
     include/trace_reader.hpp
     include/trace_writer.hpp
+    include/filter.hpp
     global_callbacks.cpp
     filtered_writer.cpp
     local_callbacks.cpp

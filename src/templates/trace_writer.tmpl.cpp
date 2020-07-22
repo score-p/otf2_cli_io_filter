@@ -57,10 +57,15 @@ TraceWriter::~TraceWriter() {
 void
 TraceWriter::handleGlobal@@def.name@@(@@def.funcargs(leading_comma=False)@@)
 {
-    OTF2_GlobalDefWriter_Write@@def.name@@(m_def_writer@@def.callargs()@@);
     @otf2  if def.name == 'Location':
     m_locations.insert(self);
     @otf2 endif
+
+    bool filter_out = m_global_@@def.name@@_filter.process(@@def.callargs(leading_comma=False)@@);
+    if(! filter_out)
+    {
+        OTF2_GlobalDefWriter_Write@@def.name@@(m_def_writer@@def.callargs()@@);
+    }
 }
 
 @otf2 endfor
@@ -71,8 +76,12 @@ void
 TraceWriter::handleLocal@@def.name@@(OTF2_LocationRef readLocation,
                                      @@def.funcargs(leading_comma=False)@@)
 {
-    auto * local_def_writer = OTF2_Archive_GetDefWriter(m_archive.get(), readLocation);
-    OTF2_DefWriter_Write@@def.name@@(local_def_writer@@def.callargs()@@);
+    bool filter_out = m_local_@@def.name@@_filter.process(readLocation@@def.callargs()@@);
+    if(! filter_out)
+    {
+        auto * local_def_writer = OTF2_Archive_GetDefWriter(m_archive.get(), readLocation);
+        OTF2_DefWriter_Write@@def.name@@(local_def_writer@@def.callargs()@@);
+    }
 }
 
 @otf2 endfor
@@ -81,13 +90,47 @@ TraceWriter::handleLocal@@def.name@@(OTF2_LocationRef readLocation,
 
 void
 TraceWriter::handle@@event.name@@Event(OTF2_LocationRef    location,
-                                      OTF2_TimeStamp      time,
-                                      OTF2_AttributeList* attributes@@event.funcargs()@@)
+                                       OTF2_TimeStamp      time,
+                                       OTF2_AttributeList* attributes@@event.funcargs()@@)
 {
-    auto * event_writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
-    OTF2_EvtWriter_@@event.name@@(event_writer,
-                                  attributes,
-                                  time@@event.callargs()@@);
+    bool filter_out = m_event_@@event.name@@_filter.process(location, time, attributes@@event.callargs()@@);
+    if(! filter_out)
+    {
+        auto * event_writer = OTF2_Archive_GetEvtWriter(m_archive.get(), location);
+        OTF2_EvtWriter_@@event.name@@(event_writer,
+                                    attributes,
+                                    time@@event.callargs()@@);
+    }
+}
+
+@otf2 endfor
+
+@otf2 for def in defs|global_defs:
+
+void
+TraceWriter::register@@def.name@@GlobalFilter(Global@@def.name@@Filter filter)
+{
+    m_global_@@def.name@@_filter.add(filter);
+}
+
+@otf2 endfor
+
+@otf2 for def in defs|local_defs:
+
+void
+TraceWriter::register@@def.name@@LocalFilter(Local@@def.name@@Filter filter)
+{
+    m_local_@@def.name@@_filter.add(filter);
+}
+
+@otf2 endfor
+
+@otf2 for event in events:
+
+void
+TraceWriter::register@@event.name@@EventFilter(Event@@event.name@@Filter filter)
+{
+    m_event_@@event.name@@_filter.add(filter);
 }
 
 @otf2 endfor
