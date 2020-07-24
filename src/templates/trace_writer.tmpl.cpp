@@ -105,32 +105,29 @@ TraceWriter::handle@@event.name@@Event(OTF2_LocationRef    location,
 
 @otf2 endfor
 
-@otf2 for def in defs|global_defs:
-
 void
-TraceWriter::register@@def.name@@GlobalFilter(Global@@def.name@@Filter filter)
+TraceWriter::register_filter(IFilterCallbacks & filter)
 {
-    m_global_@@def.name@@_filter.add(filter);
+    auto cbs = filter.get_callbacks();
+
+    @otf2 for def in defs|global_defs:
+    if(cbs.global_@@def.lower@@_callback)
+    {
+        m_global_@@def.name@@_filter.add(cbs.global_@@def.lower@@_callback);
+    }
+    @otf2 endfor
+
+    @otf2 for def in defs|local_defs:
+    if(cbs.local_@@def.lower@@_callback)
+    {
+        m_local_@@def.name@@_filter.add(cbs.local_@@def.lower@@_callback);
+    }
+    @otf2 endfor
+
+    @otf2 for event in events:
+    if(cbs.event_@@event.lower@@_callback)
+    {
+        m_event_@@event.name@@_filter.add(cbs.event_@@event.lower@@_callback);
+    }
+    @otf2 endfor
 }
-
-@otf2 endfor
-
-@otf2 for def in defs|local_defs:
-
-void
-TraceWriter::register@@def.name@@LocalFilter(Local@@def.name@@Filter filter)
-{
-    m_local_@@def.name@@_filter.add(filter);
-}
-
-@otf2 endfor
-
-@otf2 for event in events:
-
-void
-TraceWriter::register@@event.name@@EventFilter(Event@@event.name@@Filter filter)
-{
-    m_event_@@event.name@@_filter.add(filter);
-}
-
-@otf2 endfor

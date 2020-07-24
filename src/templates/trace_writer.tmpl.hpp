@@ -65,35 +65,9 @@ class TraceWriter: public Otf2Handler {
 
     @otf2 endfor
 
-    /*
-     * Register global definition filter
-     */
-    @otf2 for def in defs|global_defs:
-
     void
-    register@@def.name@@GlobalFilter(Global@@def.name@@Filter filter);
+    register_filter(IFilterCallbacks & filter);
 
-    @otf2 endfor
-
-    /*
-     * Register local definition filter
-     */
-    @otf2 for def in defs|local_defs:
-
-    void
-    register@@def.name@@LocalFilter(Local@@def.name@@Filter filter);
-
-    @otf2 endfor
-
-    /*
-     * Register event filter
-     */
-    @otf2 for event in events:
-
-    void
-    register@@event.name@@EventFilter(Event@@event.name@@Filter filter);
-
-    @otf2 endfor
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;
     archive_ptr m_archive;

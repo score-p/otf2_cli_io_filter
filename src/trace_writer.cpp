@@ -2129,692 +2129,504 @@ void TraceWriter::handleProgramEndEvent(OTF2_LocationRef location,
     }
 }
 
-void TraceWriter::registerClockPropertiesGlobalFilter(
-    GlobalClockPropertiesFilter filter) {
-    m_global_ClockProperties_filter.add(filter);
-}
-
-void TraceWriter::registerParadigmGlobalFilter(GlobalParadigmFilter filter) {
-    m_global_Paradigm_filter.add(filter);
-}
-
-void TraceWriter::registerParadigmPropertyGlobalFilter(
-    GlobalParadigmPropertyFilter filter) {
-    m_global_ParadigmProperty_filter.add(filter);
-}
-
-void TraceWriter::registerIoParadigmGlobalFilter(
-    GlobalIoParadigmFilter filter) {
-    m_global_IoParadigm_filter.add(filter);
-}
-
-void TraceWriter::registerStringGlobalFilter(GlobalStringFilter filter) {
-    m_global_String_filter.add(filter);
-}
-
-void TraceWriter::registerAttributeGlobalFilter(GlobalAttributeFilter filter) {
-    m_global_Attribute_filter.add(filter);
-}
-
-void TraceWriter::registerSystemTreeNodeGlobalFilter(
-    GlobalSystemTreeNodeFilter filter) {
-    m_global_SystemTreeNode_filter.add(filter);
-}
-
-void TraceWriter::registerLocationGroupGlobalFilter(
-    GlobalLocationGroupFilter filter) {
-    m_global_LocationGroup_filter.add(filter);
-}
-
-void TraceWriter::registerLocationGlobalFilter(GlobalLocationFilter filter) {
-    m_global_Location_filter.add(filter);
-}
-
-void TraceWriter::registerRegionGlobalFilter(GlobalRegionFilter filter) {
-    m_global_Region_filter.add(filter);
-}
-
-void TraceWriter::registerCallsiteGlobalFilter(GlobalCallsiteFilter filter) {
-    m_global_Callsite_filter.add(filter);
-}
-
-void TraceWriter::registerCallpathGlobalFilter(GlobalCallpathFilter filter) {
-    m_global_Callpath_filter.add(filter);
-}
-
-void TraceWriter::registerGroupGlobalFilter(GlobalGroupFilter filter) {
-    m_global_Group_filter.add(filter);
-}
-
-void TraceWriter::registerMetricMemberGlobalFilter(
-    GlobalMetricMemberFilter filter) {
-    m_global_MetricMember_filter.add(filter);
-}
-
-void TraceWriter::registerMetricClassGlobalFilter(
-    GlobalMetricClassFilter filter) {
-    m_global_MetricClass_filter.add(filter);
-}
-
-void TraceWriter::registerMetricInstanceGlobalFilter(
-    GlobalMetricInstanceFilter filter) {
-    m_global_MetricInstance_filter.add(filter);
-}
-
-void TraceWriter::registerCommGlobalFilter(GlobalCommFilter filter) {
-    m_global_Comm_filter.add(filter);
-}
-
-void TraceWriter::registerParameterGlobalFilter(GlobalParameterFilter filter) {
-    m_global_Parameter_filter.add(filter);
-}
-
-void TraceWriter::registerRmaWinGlobalFilter(GlobalRmaWinFilter filter) {
-    m_global_RmaWin_filter.add(filter);
-}
-
-void TraceWriter::registerMetricClassRecorderGlobalFilter(
-    GlobalMetricClassRecorderFilter filter) {
-    m_global_MetricClassRecorder_filter.add(filter);
-}
-
-void TraceWriter::registerSystemTreeNodePropertyGlobalFilter(
-    GlobalSystemTreeNodePropertyFilter filter) {
-    m_global_SystemTreeNodeProperty_filter.add(filter);
-}
-
-void TraceWriter::registerSystemTreeNodeDomainGlobalFilter(
-    GlobalSystemTreeNodeDomainFilter filter) {
-    m_global_SystemTreeNodeDomain_filter.add(filter);
-}
-
-void TraceWriter::registerLocationGroupPropertyGlobalFilter(
-    GlobalLocationGroupPropertyFilter filter) {
-    m_global_LocationGroupProperty_filter.add(filter);
-}
-
-void TraceWriter::registerLocationPropertyGlobalFilter(
-    GlobalLocationPropertyFilter filter) {
-    m_global_LocationProperty_filter.add(filter);
-}
-
-void TraceWriter::registerCartDimensionGlobalFilter(
-    GlobalCartDimensionFilter filter) {
-    m_global_CartDimension_filter.add(filter);
-}
-
-void TraceWriter::registerCartTopologyGlobalFilter(
-    GlobalCartTopologyFilter filter) {
-    m_global_CartTopology_filter.add(filter);
-}
-
-void TraceWriter::registerCartCoordinateGlobalFilter(
-    GlobalCartCoordinateFilter filter) {
-    m_global_CartCoordinate_filter.add(filter);
-}
-
-void TraceWriter::registerSourceCodeLocationGlobalFilter(
-    GlobalSourceCodeLocationFilter filter) {
-    m_global_SourceCodeLocation_filter.add(filter);
-}
-
-void TraceWriter::registerCallingContextGlobalFilter(
-    GlobalCallingContextFilter filter) {
-    m_global_CallingContext_filter.add(filter);
-}
-
-void TraceWriter::registerCallingContextPropertyGlobalFilter(
-    GlobalCallingContextPropertyFilter filter) {
-    m_global_CallingContextProperty_filter.add(filter);
-}
-
-void TraceWriter::registerInterruptGeneratorGlobalFilter(
-    GlobalInterruptGeneratorFilter filter) {
-    m_global_InterruptGenerator_filter.add(filter);
-}
-
-void TraceWriter::registerIoFilePropertyGlobalFilter(
-    GlobalIoFilePropertyFilter filter) {
-    m_global_IoFileProperty_filter.add(filter);
-}
-
-void TraceWriter::registerIoRegularFileGlobalFilter(
-    GlobalIoRegularFileFilter filter) {
-    m_global_IoRegularFile_filter.add(filter);
-}
-
-void TraceWriter::registerIoDirectoryGlobalFilter(
-    GlobalIoDirectoryFilter filter) {
-    m_global_IoDirectory_filter.add(filter);
-}
-
-void TraceWriter::registerIoHandleGlobalFilter(GlobalIoHandleFilter filter) {
-    m_global_IoHandle_filter.add(filter);
-}
-
-void TraceWriter::registerIoPreCreatedHandleStateGlobalFilter(
-    GlobalIoPreCreatedHandleStateFilter filter) {
-    m_global_IoPreCreatedHandleState_filter.add(filter);
-}
-
-void TraceWriter::registerCallpathParameterGlobalFilter(
-    GlobalCallpathParameterFilter filter) {
-    m_global_CallpathParameter_filter.add(filter);
-}
-
-void TraceWriter::registerMappingTableLocalFilter(
-    LocalMappingTableFilter filter) {
-    m_local_MappingTable_filter.add(filter);
-}
-
-void TraceWriter::registerClockOffsetLocalFilter(
-    LocalClockOffsetFilter filter) {
-    m_local_ClockOffset_filter.add(filter);
-}
-
-void TraceWriter::registerStringLocalFilter(LocalStringFilter filter) {
-    m_local_String_filter.add(filter);
-}
-
-void TraceWriter::registerAttributeLocalFilter(LocalAttributeFilter filter) {
-    m_local_Attribute_filter.add(filter);
-}
-
-void TraceWriter::registerSystemTreeNodeLocalFilter(
-    LocalSystemTreeNodeFilter filter) {
-    m_local_SystemTreeNode_filter.add(filter);
-}
-
-void TraceWriter::registerLocationGroupLocalFilter(
-    LocalLocationGroupFilter filter) {
-    m_local_LocationGroup_filter.add(filter);
-}
-
-void TraceWriter::registerLocationLocalFilter(LocalLocationFilter filter) {
-    m_local_Location_filter.add(filter);
-}
-
-void TraceWriter::registerRegionLocalFilter(LocalRegionFilter filter) {
-    m_local_Region_filter.add(filter);
-}
-
-void TraceWriter::registerCallsiteLocalFilter(LocalCallsiteFilter filter) {
-    m_local_Callsite_filter.add(filter);
-}
-
-void TraceWriter::registerCallpathLocalFilter(LocalCallpathFilter filter) {
-    m_local_Callpath_filter.add(filter);
-}
-
-void TraceWriter::registerGroupLocalFilter(LocalGroupFilter filter) {
-    m_local_Group_filter.add(filter);
-}
-
-void TraceWriter::registerMetricMemberLocalFilter(
-    LocalMetricMemberFilter filter) {
-    m_local_MetricMember_filter.add(filter);
-}
-
-void TraceWriter::registerMetricClassLocalFilter(
-    LocalMetricClassFilter filter) {
-    m_local_MetricClass_filter.add(filter);
-}
-
-void TraceWriter::registerMetricInstanceLocalFilter(
-    LocalMetricInstanceFilter filter) {
-    m_local_MetricInstance_filter.add(filter);
-}
-
-void TraceWriter::registerCommLocalFilter(LocalCommFilter filter) {
-    m_local_Comm_filter.add(filter);
-}
-
-void TraceWriter::registerParameterLocalFilter(LocalParameterFilter filter) {
-    m_local_Parameter_filter.add(filter);
-}
-
-void TraceWriter::registerRmaWinLocalFilter(LocalRmaWinFilter filter) {
-    m_local_RmaWin_filter.add(filter);
-}
-
-void TraceWriter::registerMetricClassRecorderLocalFilter(
-    LocalMetricClassRecorderFilter filter) {
-    m_local_MetricClassRecorder_filter.add(filter);
-}
-
-void TraceWriter::registerSystemTreeNodePropertyLocalFilter(
-    LocalSystemTreeNodePropertyFilter filter) {
-    m_local_SystemTreeNodeProperty_filter.add(filter);
-}
-
-void TraceWriter::registerSystemTreeNodeDomainLocalFilter(
-    LocalSystemTreeNodeDomainFilter filter) {
-    m_local_SystemTreeNodeDomain_filter.add(filter);
-}
-
-void TraceWriter::registerLocationGroupPropertyLocalFilter(
-    LocalLocationGroupPropertyFilter filter) {
-    m_local_LocationGroupProperty_filter.add(filter);
-}
-
-void TraceWriter::registerLocationPropertyLocalFilter(
-    LocalLocationPropertyFilter filter) {
-    m_local_LocationProperty_filter.add(filter);
-}
-
-void TraceWriter::registerCartDimensionLocalFilter(
-    LocalCartDimensionFilter filter) {
-    m_local_CartDimension_filter.add(filter);
-}
-
-void TraceWriter::registerCartTopologyLocalFilter(
-    LocalCartTopologyFilter filter) {
-    m_local_CartTopology_filter.add(filter);
-}
-
-void TraceWriter::registerCartCoordinateLocalFilter(
-    LocalCartCoordinateFilter filter) {
-    m_local_CartCoordinate_filter.add(filter);
-}
-
-void TraceWriter::registerSourceCodeLocationLocalFilter(
-    LocalSourceCodeLocationFilter filter) {
-    m_local_SourceCodeLocation_filter.add(filter);
-}
-
-void TraceWriter::registerCallingContextLocalFilter(
-    LocalCallingContextFilter filter) {
-    m_local_CallingContext_filter.add(filter);
-}
-
-void TraceWriter::registerCallingContextPropertyLocalFilter(
-    LocalCallingContextPropertyFilter filter) {
-    m_local_CallingContextProperty_filter.add(filter);
-}
-
-void TraceWriter::registerInterruptGeneratorLocalFilter(
-    LocalInterruptGeneratorFilter filter) {
-    m_local_InterruptGenerator_filter.add(filter);
-}
-
-void TraceWriter::registerIoFilePropertyLocalFilter(
-    LocalIoFilePropertyFilter filter) {
-    m_local_IoFileProperty_filter.add(filter);
-}
-
-void TraceWriter::registerIoRegularFileLocalFilter(
-    LocalIoRegularFileFilter filter) {
-    m_local_IoRegularFile_filter.add(filter);
-}
-
-void TraceWriter::registerIoDirectoryLocalFilter(
-    LocalIoDirectoryFilter filter) {
-    m_local_IoDirectory_filter.add(filter);
-}
-
-void TraceWriter::registerIoHandleLocalFilter(LocalIoHandleFilter filter) {
-    m_local_IoHandle_filter.add(filter);
-}
-
-void TraceWriter::registerIoPreCreatedHandleStateLocalFilter(
-    LocalIoPreCreatedHandleStateFilter filter) {
-    m_local_IoPreCreatedHandleState_filter.add(filter);
-}
-
-void TraceWriter::registerCallpathParameterLocalFilter(
-    LocalCallpathParameterFilter filter) {
-    m_local_CallpathParameter_filter.add(filter);
-}
-
-void TraceWriter::registerBufferFlushEventFilter(
-    EventBufferFlushFilter filter) {
-    m_event_BufferFlush_filter.add(filter);
-}
-
-void TraceWriter::registerMeasurementOnOffEventFilter(
-    EventMeasurementOnOffFilter filter) {
-    m_event_MeasurementOnOff_filter.add(filter);
-}
-
-void TraceWriter::registerEnterEventFilter(EventEnterFilter filter) {
-    m_event_Enter_filter.add(filter);
-}
-
-void TraceWriter::registerLeaveEventFilter(EventLeaveFilter filter) {
-    m_event_Leave_filter.add(filter);
-}
-
-void TraceWriter::registerMpiSendEventFilter(EventMpiSendFilter filter) {
-    m_event_MpiSend_filter.add(filter);
-}
-
-void TraceWriter::registerMpiIsendEventFilter(EventMpiIsendFilter filter) {
-    m_event_MpiIsend_filter.add(filter);
-}
-
-void TraceWriter::registerMpiIsendCompleteEventFilter(
-    EventMpiIsendCompleteFilter filter) {
-    m_event_MpiIsendComplete_filter.add(filter);
-}
-
-void TraceWriter::registerMpiIrecvRequestEventFilter(
-    EventMpiIrecvRequestFilter filter) {
-    m_event_MpiIrecvRequest_filter.add(filter);
-}
-
-void TraceWriter::registerMpiRecvEventFilter(EventMpiRecvFilter filter) {
-    m_event_MpiRecv_filter.add(filter);
-}
-
-void TraceWriter::registerMpiIrecvEventFilter(EventMpiIrecvFilter filter) {
-    m_event_MpiIrecv_filter.add(filter);
-}
-
-void TraceWriter::registerMpiRequestTestEventFilter(
-    EventMpiRequestTestFilter filter) {
-    m_event_MpiRequestTest_filter.add(filter);
-}
-
-void TraceWriter::registerMpiRequestCancelledEventFilter(
-    EventMpiRequestCancelledFilter filter) {
-    m_event_MpiRequestCancelled_filter.add(filter);
-}
-
-void TraceWriter::registerMpiCollectiveBeginEventFilter(
-    EventMpiCollectiveBeginFilter filter) {
-    m_event_MpiCollectiveBegin_filter.add(filter);
-}
-
-void TraceWriter::registerMpiCollectiveEndEventFilter(
-    EventMpiCollectiveEndFilter filter) {
-    m_event_MpiCollectiveEnd_filter.add(filter);
-}
-
-void TraceWriter::registerOmpForkEventFilter(EventOmpForkFilter filter) {
-    m_event_OmpFork_filter.add(filter);
-}
-
-void TraceWriter::registerOmpJoinEventFilter(EventOmpJoinFilter filter) {
-    m_event_OmpJoin_filter.add(filter);
-}
-
-void TraceWriter::registerOmpAcquireLockEventFilter(
-    EventOmpAcquireLockFilter filter) {
-    m_event_OmpAcquireLock_filter.add(filter);
-}
-
-void TraceWriter::registerOmpReleaseLockEventFilter(
-    EventOmpReleaseLockFilter filter) {
-    m_event_OmpReleaseLock_filter.add(filter);
-}
-
-void TraceWriter::registerOmpTaskCreateEventFilter(
-    EventOmpTaskCreateFilter filter) {
-    m_event_OmpTaskCreate_filter.add(filter);
-}
-
-void TraceWriter::registerOmpTaskSwitchEventFilter(
-    EventOmpTaskSwitchFilter filter) {
-    m_event_OmpTaskSwitch_filter.add(filter);
-}
-
-void TraceWriter::registerOmpTaskCompleteEventFilter(
-    EventOmpTaskCompleteFilter filter) {
-    m_event_OmpTaskComplete_filter.add(filter);
-}
-
-void TraceWriter::registerMetricEventFilter(EventMetricFilter filter) {
-    m_event_Metric_filter.add(filter);
-}
-
-void TraceWriter::registerParameterStringEventFilter(
-    EventParameterStringFilter filter) {
-    m_event_ParameterString_filter.add(filter);
-}
-
-void TraceWriter::registerParameterIntEventFilter(
-    EventParameterIntFilter filter) {
-    m_event_ParameterInt_filter.add(filter);
-}
-
-void TraceWriter::registerParameterUnsignedIntEventFilter(
-    EventParameterUnsignedIntFilter filter) {
-    m_event_ParameterUnsignedInt_filter.add(filter);
-}
-
-void TraceWriter::registerRmaWinCreateEventFilter(
-    EventRmaWinCreateFilter filter) {
-    m_event_RmaWinCreate_filter.add(filter);
-}
-
-void TraceWriter::registerRmaWinDestroyEventFilter(
-    EventRmaWinDestroyFilter filter) {
-    m_event_RmaWinDestroy_filter.add(filter);
-}
-
-void TraceWriter::registerRmaCollectiveBeginEventFilter(
-    EventRmaCollectiveBeginFilter filter) {
-    m_event_RmaCollectiveBegin_filter.add(filter);
-}
-
-void TraceWriter::registerRmaCollectiveEndEventFilter(
-    EventRmaCollectiveEndFilter filter) {
-    m_event_RmaCollectiveEnd_filter.add(filter);
-}
-
-void TraceWriter::registerRmaGroupSyncEventFilter(
-    EventRmaGroupSyncFilter filter) {
-    m_event_RmaGroupSync_filter.add(filter);
-}
-
-void TraceWriter::registerRmaRequestLockEventFilter(
-    EventRmaRequestLockFilter filter) {
-    m_event_RmaRequestLock_filter.add(filter);
-}
-
-void TraceWriter::registerRmaAcquireLockEventFilter(
-    EventRmaAcquireLockFilter filter) {
-    m_event_RmaAcquireLock_filter.add(filter);
-}
-
-void TraceWriter::registerRmaTryLockEventFilter(EventRmaTryLockFilter filter) {
-    m_event_RmaTryLock_filter.add(filter);
-}
-
-void TraceWriter::registerRmaReleaseLockEventFilter(
-    EventRmaReleaseLockFilter filter) {
-    m_event_RmaReleaseLock_filter.add(filter);
-}
-
-void TraceWriter::registerRmaSyncEventFilter(EventRmaSyncFilter filter) {
-    m_event_RmaSync_filter.add(filter);
-}
-
-void TraceWriter::registerRmaWaitChangeEventFilter(
-    EventRmaWaitChangeFilter filter) {
-    m_event_RmaWaitChange_filter.add(filter);
-}
-
-void TraceWriter::registerRmaPutEventFilter(EventRmaPutFilter filter) {
-    m_event_RmaPut_filter.add(filter);
-}
-
-void TraceWriter::registerRmaGetEventFilter(EventRmaGetFilter filter) {
-    m_event_RmaGet_filter.add(filter);
-}
-
-void TraceWriter::registerRmaAtomicEventFilter(EventRmaAtomicFilter filter) {
-    m_event_RmaAtomic_filter.add(filter);
-}
-
-void TraceWriter::registerRmaOpCompleteBlockingEventFilter(
-    EventRmaOpCompleteBlockingFilter filter) {
-    m_event_RmaOpCompleteBlocking_filter.add(filter);
-}
-
-void TraceWriter::registerRmaOpCompleteNonBlockingEventFilter(
-    EventRmaOpCompleteNonBlockingFilter filter) {
-    m_event_RmaOpCompleteNonBlocking_filter.add(filter);
-}
-
-void TraceWriter::registerRmaOpTestEventFilter(EventRmaOpTestFilter filter) {
-    m_event_RmaOpTest_filter.add(filter);
-}
-
-void TraceWriter::registerRmaOpCompleteRemoteEventFilter(
-    EventRmaOpCompleteRemoteFilter filter) {
-    m_event_RmaOpCompleteRemote_filter.add(filter);
-}
-
-void TraceWriter::registerThreadForkEventFilter(EventThreadForkFilter filter) {
-    m_event_ThreadFork_filter.add(filter);
-}
-
-void TraceWriter::registerThreadJoinEventFilter(EventThreadJoinFilter filter) {
-    m_event_ThreadJoin_filter.add(filter);
-}
-
-void TraceWriter::registerThreadTeamBeginEventFilter(
-    EventThreadTeamBeginFilter filter) {
-    m_event_ThreadTeamBegin_filter.add(filter);
-}
-
-void TraceWriter::registerThreadTeamEndEventFilter(
-    EventThreadTeamEndFilter filter) {
-    m_event_ThreadTeamEnd_filter.add(filter);
-}
-
-void TraceWriter::registerThreadAcquireLockEventFilter(
-    EventThreadAcquireLockFilter filter) {
-    m_event_ThreadAcquireLock_filter.add(filter);
-}
-
-void TraceWriter::registerThreadReleaseLockEventFilter(
-    EventThreadReleaseLockFilter filter) {
-    m_event_ThreadReleaseLock_filter.add(filter);
-}
-
-void TraceWriter::registerThreadTaskCreateEventFilter(
-    EventThreadTaskCreateFilter filter) {
-    m_event_ThreadTaskCreate_filter.add(filter);
-}
-
-void TraceWriter::registerThreadTaskSwitchEventFilter(
-    EventThreadTaskSwitchFilter filter) {
-    m_event_ThreadTaskSwitch_filter.add(filter);
-}
-
-void TraceWriter::registerThreadTaskCompleteEventFilter(
-    EventThreadTaskCompleteFilter filter) {
-    m_event_ThreadTaskComplete_filter.add(filter);
-}
-
-void TraceWriter::registerThreadCreateEventFilter(
-    EventThreadCreateFilter filter) {
-    m_event_ThreadCreate_filter.add(filter);
-}
-
-void TraceWriter::registerThreadBeginEventFilter(
-    EventThreadBeginFilter filter) {
-    m_event_ThreadBegin_filter.add(filter);
-}
-
-void TraceWriter::registerThreadWaitEventFilter(EventThreadWaitFilter filter) {
-    m_event_ThreadWait_filter.add(filter);
-}
-
-void TraceWriter::registerThreadEndEventFilter(EventThreadEndFilter filter) {
-    m_event_ThreadEnd_filter.add(filter);
-}
-
-void TraceWriter::registerCallingContextEnterEventFilter(
-    EventCallingContextEnterFilter filter) {
-    m_event_CallingContextEnter_filter.add(filter);
-}
-
-void TraceWriter::registerCallingContextLeaveEventFilter(
-    EventCallingContextLeaveFilter filter) {
-    m_event_CallingContextLeave_filter.add(filter);
-}
-
-void TraceWriter::registerCallingContextSampleEventFilter(
-    EventCallingContextSampleFilter filter) {
-    m_event_CallingContextSample_filter.add(filter);
-}
-
-void TraceWriter::registerIoCreateHandleEventFilter(
-    EventIoCreateHandleFilter filter) {
-    m_event_IoCreateHandle_filter.add(filter);
-}
-
-void TraceWriter::registerIoDestroyHandleEventFilter(
-    EventIoDestroyHandleFilter filter) {
-    m_event_IoDestroyHandle_filter.add(filter);
-}
-
-void TraceWriter::registerIoDuplicateHandleEventFilter(
-    EventIoDuplicateHandleFilter filter) {
-    m_event_IoDuplicateHandle_filter.add(filter);
-}
-
-void TraceWriter::registerIoSeekEventFilter(EventIoSeekFilter filter) {
-    m_event_IoSeek_filter.add(filter);
-}
-
-void TraceWriter::registerIoChangeStatusFlagsEventFilter(
-    EventIoChangeStatusFlagsFilter filter) {
-    m_event_IoChangeStatusFlags_filter.add(filter);
-}
-
-void TraceWriter::registerIoDeleteFileEventFilter(
-    EventIoDeleteFileFilter filter) {
-    m_event_IoDeleteFile_filter.add(filter);
-}
-
-void TraceWriter::registerIoOperationBeginEventFilter(
-    EventIoOperationBeginFilter filter) {
-    m_event_IoOperationBegin_filter.add(filter);
-}
-
-void TraceWriter::registerIoOperationTestEventFilter(
-    EventIoOperationTestFilter filter) {
-    m_event_IoOperationTest_filter.add(filter);
-}
-
-void TraceWriter::registerIoOperationIssuedEventFilter(
-    EventIoOperationIssuedFilter filter) {
-    m_event_IoOperationIssued_filter.add(filter);
-}
-
-void TraceWriter::registerIoOperationCompleteEventFilter(
-    EventIoOperationCompleteFilter filter) {
-    m_event_IoOperationComplete_filter.add(filter);
-}
-
-void TraceWriter::registerIoOperationCancelledEventFilter(
-    EventIoOperationCancelledFilter filter) {
-    m_event_IoOperationCancelled_filter.add(filter);
-}
-
-void TraceWriter::registerIoAcquireLockEventFilter(
-    EventIoAcquireLockFilter filter) {
-    m_event_IoAcquireLock_filter.add(filter);
-}
-
-void TraceWriter::registerIoReleaseLockEventFilter(
-    EventIoReleaseLockFilter filter) {
-    m_event_IoReleaseLock_filter.add(filter);
-}
-
-void TraceWriter::registerIoTryLockEventFilter(EventIoTryLockFilter filter) {
-    m_event_IoTryLock_filter.add(filter);
-}
-
-void TraceWriter::registerProgramBeginEventFilter(
-    EventProgramBeginFilter filter) {
-    m_event_ProgramBegin_filter.add(filter);
-}
-
-void TraceWriter::registerProgramEndEventFilter(EventProgramEndFilter filter) {
-    m_event_ProgramEnd_filter.add(filter);
+void TraceWriter::register_filter(IFilterCallbacks &filter) {
+    auto cbs = filter.get_callbacks();
+
+    if (cbs.global_clock_properties_callback) {
+        m_global_ClockProperties_filter.add(
+            cbs.global_clock_properties_callback);
+    }
+    if (cbs.global_paradigm_callback) {
+        m_global_Paradigm_filter.add(cbs.global_paradigm_callback);
+    }
+    if (cbs.global_paradigm_property_callback) {
+        m_global_ParadigmProperty_filter.add(
+            cbs.global_paradigm_property_callback);
+    }
+    if (cbs.global_io_paradigm_callback) {
+        m_global_IoParadigm_filter.add(cbs.global_io_paradigm_callback);
+    }
+    if (cbs.global_string_callback) {
+        m_global_String_filter.add(cbs.global_string_callback);
+    }
+    if (cbs.global_attribute_callback) {
+        m_global_Attribute_filter.add(cbs.global_attribute_callback);
+    }
+    if (cbs.global_system_tree_node_callback) {
+        m_global_SystemTreeNode_filter.add(
+            cbs.global_system_tree_node_callback);
+    }
+    if (cbs.global_location_group_callback) {
+        m_global_LocationGroup_filter.add(cbs.global_location_group_callback);
+    }
+    if (cbs.global_location_callback) {
+        m_global_Location_filter.add(cbs.global_location_callback);
+    }
+    if (cbs.global_region_callback) {
+        m_global_Region_filter.add(cbs.global_region_callback);
+    }
+    if (cbs.global_callsite_callback) {
+        m_global_Callsite_filter.add(cbs.global_callsite_callback);
+    }
+    if (cbs.global_callpath_callback) {
+        m_global_Callpath_filter.add(cbs.global_callpath_callback);
+    }
+    if (cbs.global_group_callback) {
+        m_global_Group_filter.add(cbs.global_group_callback);
+    }
+    if (cbs.global_metric_member_callback) {
+        m_global_MetricMember_filter.add(cbs.global_metric_member_callback);
+    }
+    if (cbs.global_metric_class_callback) {
+        m_global_MetricClass_filter.add(cbs.global_metric_class_callback);
+    }
+    if (cbs.global_metric_instance_callback) {
+        m_global_MetricInstance_filter.add(cbs.global_metric_instance_callback);
+    }
+    if (cbs.global_comm_callback) {
+        m_global_Comm_filter.add(cbs.global_comm_callback);
+    }
+    if (cbs.global_parameter_callback) {
+        m_global_Parameter_filter.add(cbs.global_parameter_callback);
+    }
+    if (cbs.global_rma_win_callback) {
+        m_global_RmaWin_filter.add(cbs.global_rma_win_callback);
+    }
+    if (cbs.global_metric_class_recorder_callback) {
+        m_global_MetricClassRecorder_filter.add(
+            cbs.global_metric_class_recorder_callback);
+    }
+    if (cbs.global_system_tree_node_property_callback) {
+        m_global_SystemTreeNodeProperty_filter.add(
+            cbs.global_system_tree_node_property_callback);
+    }
+    if (cbs.global_system_tree_node_domain_callback) {
+        m_global_SystemTreeNodeDomain_filter.add(
+            cbs.global_system_tree_node_domain_callback);
+    }
+    if (cbs.global_location_group_property_callback) {
+        m_global_LocationGroupProperty_filter.add(
+            cbs.global_location_group_property_callback);
+    }
+    if (cbs.global_location_property_callback) {
+        m_global_LocationProperty_filter.add(
+            cbs.global_location_property_callback);
+    }
+    if (cbs.global_cart_dimension_callback) {
+        m_global_CartDimension_filter.add(cbs.global_cart_dimension_callback);
+    }
+    if (cbs.global_cart_topology_callback) {
+        m_global_CartTopology_filter.add(cbs.global_cart_topology_callback);
+    }
+    if (cbs.global_cart_coordinate_callback) {
+        m_global_CartCoordinate_filter.add(cbs.global_cart_coordinate_callback);
+    }
+    if (cbs.global_source_code_location_callback) {
+        m_global_SourceCodeLocation_filter.add(
+            cbs.global_source_code_location_callback);
+    }
+    if (cbs.global_calling_context_callback) {
+        m_global_CallingContext_filter.add(cbs.global_calling_context_callback);
+    }
+    if (cbs.global_calling_context_property_callback) {
+        m_global_CallingContextProperty_filter.add(
+            cbs.global_calling_context_property_callback);
+    }
+    if (cbs.global_interrupt_generator_callback) {
+        m_global_InterruptGenerator_filter.add(
+            cbs.global_interrupt_generator_callback);
+    }
+    if (cbs.global_io_file_property_callback) {
+        m_global_IoFileProperty_filter.add(
+            cbs.global_io_file_property_callback);
+    }
+    if (cbs.global_io_regular_file_callback) {
+        m_global_IoRegularFile_filter.add(cbs.global_io_regular_file_callback);
+    }
+    if (cbs.global_io_directory_callback) {
+        m_global_IoDirectory_filter.add(cbs.global_io_directory_callback);
+    }
+    if (cbs.global_io_handle_callback) {
+        m_global_IoHandle_filter.add(cbs.global_io_handle_callback);
+    }
+    if (cbs.global_io_pre_created_handle_state_callback) {
+        m_global_IoPreCreatedHandleState_filter.add(
+            cbs.global_io_pre_created_handle_state_callback);
+    }
+    if (cbs.global_callpath_parameter_callback) {
+        m_global_CallpathParameter_filter.add(
+            cbs.global_callpath_parameter_callback);
+    }
+
+    if (cbs.local_mapping_table_callback) {
+        m_local_MappingTable_filter.add(cbs.local_mapping_table_callback);
+    }
+    if (cbs.local_clock_offset_callback) {
+        m_local_ClockOffset_filter.add(cbs.local_clock_offset_callback);
+    }
+    if (cbs.local_string_callback) {
+        m_local_String_filter.add(cbs.local_string_callback);
+    }
+    if (cbs.local_attribute_callback) {
+        m_local_Attribute_filter.add(cbs.local_attribute_callback);
+    }
+    if (cbs.local_system_tree_node_callback) {
+        m_local_SystemTreeNode_filter.add(cbs.local_system_tree_node_callback);
+    }
+    if (cbs.local_location_group_callback) {
+        m_local_LocationGroup_filter.add(cbs.local_location_group_callback);
+    }
+    if (cbs.local_location_callback) {
+        m_local_Location_filter.add(cbs.local_location_callback);
+    }
+    if (cbs.local_region_callback) {
+        m_local_Region_filter.add(cbs.local_region_callback);
+    }
+    if (cbs.local_callsite_callback) {
+        m_local_Callsite_filter.add(cbs.local_callsite_callback);
+    }
+    if (cbs.local_callpath_callback) {
+        m_local_Callpath_filter.add(cbs.local_callpath_callback);
+    }
+    if (cbs.local_group_callback) {
+        m_local_Group_filter.add(cbs.local_group_callback);
+    }
+    if (cbs.local_metric_member_callback) {
+        m_local_MetricMember_filter.add(cbs.local_metric_member_callback);
+    }
+    if (cbs.local_metric_class_callback) {
+        m_local_MetricClass_filter.add(cbs.local_metric_class_callback);
+    }
+    if (cbs.local_metric_instance_callback) {
+        m_local_MetricInstance_filter.add(cbs.local_metric_instance_callback);
+    }
+    if (cbs.local_comm_callback) {
+        m_local_Comm_filter.add(cbs.local_comm_callback);
+    }
+    if (cbs.local_parameter_callback) {
+        m_local_Parameter_filter.add(cbs.local_parameter_callback);
+    }
+    if (cbs.local_rma_win_callback) {
+        m_local_RmaWin_filter.add(cbs.local_rma_win_callback);
+    }
+    if (cbs.local_metric_class_recorder_callback) {
+        m_local_MetricClassRecorder_filter.add(
+            cbs.local_metric_class_recorder_callback);
+    }
+    if (cbs.local_system_tree_node_property_callback) {
+        m_local_SystemTreeNodeProperty_filter.add(
+            cbs.local_system_tree_node_property_callback);
+    }
+    if (cbs.local_system_tree_node_domain_callback) {
+        m_local_SystemTreeNodeDomain_filter.add(
+            cbs.local_system_tree_node_domain_callback);
+    }
+    if (cbs.local_location_group_property_callback) {
+        m_local_LocationGroupProperty_filter.add(
+            cbs.local_location_group_property_callback);
+    }
+    if (cbs.local_location_property_callback) {
+        m_local_LocationProperty_filter.add(
+            cbs.local_location_property_callback);
+    }
+    if (cbs.local_cart_dimension_callback) {
+        m_local_CartDimension_filter.add(cbs.local_cart_dimension_callback);
+    }
+    if (cbs.local_cart_topology_callback) {
+        m_local_CartTopology_filter.add(cbs.local_cart_topology_callback);
+    }
+    if (cbs.local_cart_coordinate_callback) {
+        m_local_CartCoordinate_filter.add(cbs.local_cart_coordinate_callback);
+    }
+    if (cbs.local_source_code_location_callback) {
+        m_local_SourceCodeLocation_filter.add(
+            cbs.local_source_code_location_callback);
+    }
+    if (cbs.local_calling_context_callback) {
+        m_local_CallingContext_filter.add(cbs.local_calling_context_callback);
+    }
+    if (cbs.local_calling_context_property_callback) {
+        m_local_CallingContextProperty_filter.add(
+            cbs.local_calling_context_property_callback);
+    }
+    if (cbs.local_interrupt_generator_callback) {
+        m_local_InterruptGenerator_filter.add(
+            cbs.local_interrupt_generator_callback);
+    }
+    if (cbs.local_io_file_property_callback) {
+        m_local_IoFileProperty_filter.add(cbs.local_io_file_property_callback);
+    }
+    if (cbs.local_io_regular_file_callback) {
+        m_local_IoRegularFile_filter.add(cbs.local_io_regular_file_callback);
+    }
+    if (cbs.local_io_directory_callback) {
+        m_local_IoDirectory_filter.add(cbs.local_io_directory_callback);
+    }
+    if (cbs.local_io_handle_callback) {
+        m_local_IoHandle_filter.add(cbs.local_io_handle_callback);
+    }
+    if (cbs.local_io_pre_created_handle_state_callback) {
+        m_local_IoPreCreatedHandleState_filter.add(
+            cbs.local_io_pre_created_handle_state_callback);
+    }
+    if (cbs.local_callpath_parameter_callback) {
+        m_local_CallpathParameter_filter.add(
+            cbs.local_callpath_parameter_callback);
+    }
+
+    if (cbs.event_buffer_flush_callback) {
+        m_event_BufferFlush_filter.add(cbs.event_buffer_flush_callback);
+    }
+    if (cbs.event_measurement_on_off_callback) {
+        m_event_MeasurementOnOff_filter.add(
+            cbs.event_measurement_on_off_callback);
+    }
+    if (cbs.event_enter_callback) {
+        m_event_Enter_filter.add(cbs.event_enter_callback);
+    }
+    if (cbs.event_leave_callback) {
+        m_event_Leave_filter.add(cbs.event_leave_callback);
+    }
+    if (cbs.event_mpi_send_callback) {
+        m_event_MpiSend_filter.add(cbs.event_mpi_send_callback);
+    }
+    if (cbs.event_mpi_isend_callback) {
+        m_event_MpiIsend_filter.add(cbs.event_mpi_isend_callback);
+    }
+    if (cbs.event_mpi_isend_complete_callback) {
+        m_event_MpiIsendComplete_filter.add(
+            cbs.event_mpi_isend_complete_callback);
+    }
+    if (cbs.event_mpi_irecv_request_callback) {
+        m_event_MpiIrecvRequest_filter.add(
+            cbs.event_mpi_irecv_request_callback);
+    }
+    if (cbs.event_mpi_recv_callback) {
+        m_event_MpiRecv_filter.add(cbs.event_mpi_recv_callback);
+    }
+    if (cbs.event_mpi_irecv_callback) {
+        m_event_MpiIrecv_filter.add(cbs.event_mpi_irecv_callback);
+    }
+    if (cbs.event_mpi_request_test_callback) {
+        m_event_MpiRequestTest_filter.add(cbs.event_mpi_request_test_callback);
+    }
+    if (cbs.event_mpi_request_cancelled_callback) {
+        m_event_MpiRequestCancelled_filter.add(
+            cbs.event_mpi_request_cancelled_callback);
+    }
+    if (cbs.event_mpi_collective_begin_callback) {
+        m_event_MpiCollectiveBegin_filter.add(
+            cbs.event_mpi_collective_begin_callback);
+    }
+    if (cbs.event_mpi_collective_end_callback) {
+        m_event_MpiCollectiveEnd_filter.add(
+            cbs.event_mpi_collective_end_callback);
+    }
+    if (cbs.event_omp_fork_callback) {
+        m_event_OmpFork_filter.add(cbs.event_omp_fork_callback);
+    }
+    if (cbs.event_omp_join_callback) {
+        m_event_OmpJoin_filter.add(cbs.event_omp_join_callback);
+    }
+    if (cbs.event_omp_acquire_lock_callback) {
+        m_event_OmpAcquireLock_filter.add(cbs.event_omp_acquire_lock_callback);
+    }
+    if (cbs.event_omp_release_lock_callback) {
+        m_event_OmpReleaseLock_filter.add(cbs.event_omp_release_lock_callback);
+    }
+    if (cbs.event_omp_task_create_callback) {
+        m_event_OmpTaskCreate_filter.add(cbs.event_omp_task_create_callback);
+    }
+    if (cbs.event_omp_task_switch_callback) {
+        m_event_OmpTaskSwitch_filter.add(cbs.event_omp_task_switch_callback);
+    }
+    if (cbs.event_omp_task_complete_callback) {
+        m_event_OmpTaskComplete_filter.add(
+            cbs.event_omp_task_complete_callback);
+    }
+    if (cbs.event_metric_callback) {
+        m_event_Metric_filter.add(cbs.event_metric_callback);
+    }
+    if (cbs.event_parameter_string_callback) {
+        m_event_ParameterString_filter.add(cbs.event_parameter_string_callback);
+    }
+    if (cbs.event_parameter_int_callback) {
+        m_event_ParameterInt_filter.add(cbs.event_parameter_int_callback);
+    }
+    if (cbs.event_parameter_unsigned_int_callback) {
+        m_event_ParameterUnsignedInt_filter.add(
+            cbs.event_parameter_unsigned_int_callback);
+    }
+    if (cbs.event_rma_win_create_callback) {
+        m_event_RmaWinCreate_filter.add(cbs.event_rma_win_create_callback);
+    }
+    if (cbs.event_rma_win_destroy_callback) {
+        m_event_RmaWinDestroy_filter.add(cbs.event_rma_win_destroy_callback);
+    }
+    if (cbs.event_rma_collective_begin_callback) {
+        m_event_RmaCollectiveBegin_filter.add(
+            cbs.event_rma_collective_begin_callback);
+    }
+    if (cbs.event_rma_collective_end_callback) {
+        m_event_RmaCollectiveEnd_filter.add(
+            cbs.event_rma_collective_end_callback);
+    }
+    if (cbs.event_rma_group_sync_callback) {
+        m_event_RmaGroupSync_filter.add(cbs.event_rma_group_sync_callback);
+    }
+    if (cbs.event_rma_request_lock_callback) {
+        m_event_RmaRequestLock_filter.add(cbs.event_rma_request_lock_callback);
+    }
+    if (cbs.event_rma_acquire_lock_callback) {
+        m_event_RmaAcquireLock_filter.add(cbs.event_rma_acquire_lock_callback);
+    }
+    if (cbs.event_rma_try_lock_callback) {
+        m_event_RmaTryLock_filter.add(cbs.event_rma_try_lock_callback);
+    }
+    if (cbs.event_rma_release_lock_callback) {
+        m_event_RmaReleaseLock_filter.add(cbs.event_rma_release_lock_callback);
+    }
+    if (cbs.event_rma_sync_callback) {
+        m_event_RmaSync_filter.add(cbs.event_rma_sync_callback);
+    }
+    if (cbs.event_rma_wait_change_callback) {
+        m_event_RmaWaitChange_filter.add(cbs.event_rma_wait_change_callback);
+    }
+    if (cbs.event_rma_put_callback) {
+        m_event_RmaPut_filter.add(cbs.event_rma_put_callback);
+    }
+    if (cbs.event_rma_get_callback) {
+        m_event_RmaGet_filter.add(cbs.event_rma_get_callback);
+    }
+    if (cbs.event_rma_atomic_callback) {
+        m_event_RmaAtomic_filter.add(cbs.event_rma_atomic_callback);
+    }
+    if (cbs.event_rma_op_complete_blocking_callback) {
+        m_event_RmaOpCompleteBlocking_filter.add(
+            cbs.event_rma_op_complete_blocking_callback);
+    }
+    if (cbs.event_rma_op_complete_non_blocking_callback) {
+        m_event_RmaOpCompleteNonBlocking_filter.add(
+            cbs.event_rma_op_complete_non_blocking_callback);
+    }
+    if (cbs.event_rma_op_test_callback) {
+        m_event_RmaOpTest_filter.add(cbs.event_rma_op_test_callback);
+    }
+    if (cbs.event_rma_op_complete_remote_callback) {
+        m_event_RmaOpCompleteRemote_filter.add(
+            cbs.event_rma_op_complete_remote_callback);
+    }
+    if (cbs.event_thread_fork_callback) {
+        m_event_ThreadFork_filter.add(cbs.event_thread_fork_callback);
+    }
+    if (cbs.event_thread_join_callback) {
+        m_event_ThreadJoin_filter.add(cbs.event_thread_join_callback);
+    }
+    if (cbs.event_thread_team_begin_callback) {
+        m_event_ThreadTeamBegin_filter.add(
+            cbs.event_thread_team_begin_callback);
+    }
+    if (cbs.event_thread_team_end_callback) {
+        m_event_ThreadTeamEnd_filter.add(cbs.event_thread_team_end_callback);
+    }
+    if (cbs.event_thread_acquire_lock_callback) {
+        m_event_ThreadAcquireLock_filter.add(
+            cbs.event_thread_acquire_lock_callback);
+    }
+    if (cbs.event_thread_release_lock_callback) {
+        m_event_ThreadReleaseLock_filter.add(
+            cbs.event_thread_release_lock_callback);
+    }
+    if (cbs.event_thread_task_create_callback) {
+        m_event_ThreadTaskCreate_filter.add(
+            cbs.event_thread_task_create_callback);
+    }
+    if (cbs.event_thread_task_switch_callback) {
+        m_event_ThreadTaskSwitch_filter.add(
+            cbs.event_thread_task_switch_callback);
+    }
+    if (cbs.event_thread_task_complete_callback) {
+        m_event_ThreadTaskComplete_filter.add(
+            cbs.event_thread_task_complete_callback);
+    }
+    if (cbs.event_thread_create_callback) {
+        m_event_ThreadCreate_filter.add(cbs.event_thread_create_callback);
+    }
+    if (cbs.event_thread_begin_callback) {
+        m_event_ThreadBegin_filter.add(cbs.event_thread_begin_callback);
+    }
+    if (cbs.event_thread_wait_callback) {
+        m_event_ThreadWait_filter.add(cbs.event_thread_wait_callback);
+    }
+    if (cbs.event_thread_end_callback) {
+        m_event_ThreadEnd_filter.add(cbs.event_thread_end_callback);
+    }
+    if (cbs.event_calling_context_enter_callback) {
+        m_event_CallingContextEnter_filter.add(
+            cbs.event_calling_context_enter_callback);
+    }
+    if (cbs.event_calling_context_leave_callback) {
+        m_event_CallingContextLeave_filter.add(
+            cbs.event_calling_context_leave_callback);
+    }
+    if (cbs.event_calling_context_sample_callback) {
+        m_event_CallingContextSample_filter.add(
+            cbs.event_calling_context_sample_callback);
+    }
+    if (cbs.event_io_create_handle_callback) {
+        m_event_IoCreateHandle_filter.add(cbs.event_io_create_handle_callback);
+    }
+    if (cbs.event_io_destroy_handle_callback) {
+        m_event_IoDestroyHandle_filter.add(
+            cbs.event_io_destroy_handle_callback);
+    }
+    if (cbs.event_io_duplicate_handle_callback) {
+        m_event_IoDuplicateHandle_filter.add(
+            cbs.event_io_duplicate_handle_callback);
+    }
+    if (cbs.event_io_seek_callback) {
+        m_event_IoSeek_filter.add(cbs.event_io_seek_callback);
+    }
+    if (cbs.event_io_change_status_flags_callback) {
+        m_event_IoChangeStatusFlags_filter.add(
+            cbs.event_io_change_status_flags_callback);
+    }
+    if (cbs.event_io_delete_file_callback) {
+        m_event_IoDeleteFile_filter.add(cbs.event_io_delete_file_callback);
+    }
+    if (cbs.event_io_operation_begin_callback) {
+        m_event_IoOperationBegin_filter.add(
+            cbs.event_io_operation_begin_callback);
+    }
+    if (cbs.event_io_operation_test_callback) {
+        m_event_IoOperationTest_filter.add(
+            cbs.event_io_operation_test_callback);
+    }
+    if (cbs.event_io_operation_issued_callback) {
+        m_event_IoOperationIssued_filter.add(
+            cbs.event_io_operation_issued_callback);
+    }
+    if (cbs.event_io_operation_complete_callback) {
+        m_event_IoOperationComplete_filter.add(
+            cbs.event_io_operation_complete_callback);
+    }
+    if (cbs.event_io_operation_cancelled_callback) {
+        m_event_IoOperationCancelled_filter.add(
+            cbs.event_io_operation_cancelled_callback);
+    }
+    if (cbs.event_io_acquire_lock_callback) {
+        m_event_IoAcquireLock_filter.add(cbs.event_io_acquire_lock_callback);
+    }
+    if (cbs.event_io_release_lock_callback) {
+        m_event_IoReleaseLock_filter.add(cbs.event_io_release_lock_callback);
+    }
+    if (cbs.event_io_try_lock_callback) {
+        m_event_IoTryLock_filter.add(cbs.event_io_try_lock_callback);
+    }
+    if (cbs.event_program_begin_callback) {
+        m_event_ProgramBegin_filter.add(cbs.event_program_begin_callback);
+    }
+    if (cbs.event_program_end_callback) {
+        m_event_ProgramEnd_filter.add(cbs.event_program_end_callback);
+    }
 }

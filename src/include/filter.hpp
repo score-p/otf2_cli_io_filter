@@ -599,6 +599,328 @@ using EventProgramBeginFilter =
 using EventProgramEndFilter = FilterCallback<OTF2_LocationRef, OTF2_TimeStamp,
                                              OTF2_AttributeList *, int64_t>;
 
+class IFilterCallbacks {
+  public:
+    struct Callbacks {
+        /*
+         * Global definition callbacks
+         */
+
+        GlobalClockPropertiesFilter global_clock_properties_callback;
+
+        GlobalParadigmFilter global_paradigm_callback;
+
+        GlobalParadigmPropertyFilter global_paradigm_property_callback;
+
+        GlobalIoParadigmFilter global_io_paradigm_callback;
+
+        GlobalStringFilter global_string_callback;
+
+        GlobalAttributeFilter global_attribute_callback;
+
+        GlobalSystemTreeNodeFilter global_system_tree_node_callback;
+
+        GlobalLocationGroupFilter global_location_group_callback;
+
+        GlobalLocationFilter global_location_callback;
+
+        GlobalRegionFilter global_region_callback;
+
+        GlobalCallsiteFilter global_callsite_callback;
+
+        GlobalCallpathFilter global_callpath_callback;
+
+        GlobalGroupFilter global_group_callback;
+
+        GlobalMetricMemberFilter global_metric_member_callback;
+
+        GlobalMetricClassFilter global_metric_class_callback;
+
+        GlobalMetricInstanceFilter global_metric_instance_callback;
+
+        GlobalCommFilter global_comm_callback;
+
+        GlobalParameterFilter global_parameter_callback;
+
+        GlobalRmaWinFilter global_rma_win_callback;
+
+        GlobalMetricClassRecorderFilter global_metric_class_recorder_callback;
+
+        GlobalSystemTreeNodePropertyFilter
+            global_system_tree_node_property_callback;
+
+        GlobalSystemTreeNodeDomainFilter
+            global_system_tree_node_domain_callback;
+
+        GlobalLocationGroupPropertyFilter
+            global_location_group_property_callback;
+
+        GlobalLocationPropertyFilter global_location_property_callback;
+
+        GlobalCartDimensionFilter global_cart_dimension_callback;
+
+        GlobalCartTopologyFilter global_cart_topology_callback;
+
+        GlobalCartCoordinateFilter global_cart_coordinate_callback;
+
+        GlobalSourceCodeLocationFilter global_source_code_location_callback;
+
+        GlobalCallingContextFilter global_calling_context_callback;
+
+        GlobalCallingContextPropertyFilter
+            global_calling_context_property_callback;
+
+        GlobalInterruptGeneratorFilter global_interrupt_generator_callback;
+
+        GlobalIoFilePropertyFilter global_io_file_property_callback;
+
+        GlobalIoRegularFileFilter global_io_regular_file_callback;
+
+        GlobalIoDirectoryFilter global_io_directory_callback;
+
+        GlobalIoHandleFilter global_io_handle_callback;
+
+        GlobalIoPreCreatedHandleStateFilter
+            global_io_pre_created_handle_state_callback;
+
+        GlobalCallpathParameterFilter global_callpath_parameter_callback;
+
+        /*
+         * Local definition callbacks
+         */
+
+        LocalMappingTableFilter local_mapping_table_callback;
+
+        LocalClockOffsetFilter local_clock_offset_callback;
+
+        LocalStringFilter local_string_callback;
+
+        LocalAttributeFilter local_attribute_callback;
+
+        LocalSystemTreeNodeFilter local_system_tree_node_callback;
+
+        LocalLocationGroupFilter local_location_group_callback;
+
+        LocalLocationFilter local_location_callback;
+
+        LocalRegionFilter local_region_callback;
+
+        LocalCallsiteFilter local_callsite_callback;
+
+        LocalCallpathFilter local_callpath_callback;
+
+        LocalGroupFilter local_group_callback;
+
+        LocalMetricMemberFilter local_metric_member_callback;
+
+        LocalMetricClassFilter local_metric_class_callback;
+
+        LocalMetricInstanceFilter local_metric_instance_callback;
+
+        LocalCommFilter local_comm_callback;
+
+        LocalParameterFilter local_parameter_callback;
+
+        LocalRmaWinFilter local_rma_win_callback;
+
+        LocalMetricClassRecorderFilter local_metric_class_recorder_callback;
+
+        LocalSystemTreeNodePropertyFilter
+            local_system_tree_node_property_callback;
+
+        LocalSystemTreeNodeDomainFilter local_system_tree_node_domain_callback;
+
+        LocalLocationGroupPropertyFilter local_location_group_property_callback;
+
+        LocalLocationPropertyFilter local_location_property_callback;
+
+        LocalCartDimensionFilter local_cart_dimension_callback;
+
+        LocalCartTopologyFilter local_cart_topology_callback;
+
+        LocalCartCoordinateFilter local_cart_coordinate_callback;
+
+        LocalSourceCodeLocationFilter local_source_code_location_callback;
+
+        LocalCallingContextFilter local_calling_context_callback;
+
+        LocalCallingContextPropertyFilter
+            local_calling_context_property_callback;
+
+        LocalInterruptGeneratorFilter local_interrupt_generator_callback;
+
+        LocalIoFilePropertyFilter local_io_file_property_callback;
+
+        LocalIoRegularFileFilter local_io_regular_file_callback;
+
+        LocalIoDirectoryFilter local_io_directory_callback;
+
+        LocalIoHandleFilter local_io_handle_callback;
+
+        LocalIoPreCreatedHandleStateFilter
+            local_io_pre_created_handle_state_callback;
+
+        LocalCallpathParameterFilter local_callpath_parameter_callback;
+
+        /*
+         * Event filter callbacks
+         */
+
+        EventBufferFlushFilter event_buffer_flush_callback;
+
+        EventMeasurementOnOffFilter event_measurement_on_off_callback;
+
+        EventEnterFilter event_enter_callback;
+
+        EventLeaveFilter event_leave_callback;
+
+        EventMpiSendFilter event_mpi_send_callback;
+
+        EventMpiIsendFilter event_mpi_isend_callback;
+
+        EventMpiIsendCompleteFilter event_mpi_isend_complete_callback;
+
+        EventMpiIrecvRequestFilter event_mpi_irecv_request_callback;
+
+        EventMpiRecvFilter event_mpi_recv_callback;
+
+        EventMpiIrecvFilter event_mpi_irecv_callback;
+
+        EventMpiRequestTestFilter event_mpi_request_test_callback;
+
+        EventMpiRequestCancelledFilter event_mpi_request_cancelled_callback;
+
+        EventMpiCollectiveBeginFilter event_mpi_collective_begin_callback;
+
+        EventMpiCollectiveEndFilter event_mpi_collective_end_callback;
+
+        EventOmpForkFilter event_omp_fork_callback;
+
+        EventOmpJoinFilter event_omp_join_callback;
+
+        EventOmpAcquireLockFilter event_omp_acquire_lock_callback;
+
+        EventOmpReleaseLockFilter event_omp_release_lock_callback;
+
+        EventOmpTaskCreateFilter event_omp_task_create_callback;
+
+        EventOmpTaskSwitchFilter event_omp_task_switch_callback;
+
+        EventOmpTaskCompleteFilter event_omp_task_complete_callback;
+
+        EventMetricFilter event_metric_callback;
+
+        EventParameterStringFilter event_parameter_string_callback;
+
+        EventParameterIntFilter event_parameter_int_callback;
+
+        EventParameterUnsignedIntFilter event_parameter_unsigned_int_callback;
+
+        EventRmaWinCreateFilter event_rma_win_create_callback;
+
+        EventRmaWinDestroyFilter event_rma_win_destroy_callback;
+
+        EventRmaCollectiveBeginFilter event_rma_collective_begin_callback;
+
+        EventRmaCollectiveEndFilter event_rma_collective_end_callback;
+
+        EventRmaGroupSyncFilter event_rma_group_sync_callback;
+
+        EventRmaRequestLockFilter event_rma_request_lock_callback;
+
+        EventRmaAcquireLockFilter event_rma_acquire_lock_callback;
+
+        EventRmaTryLockFilter event_rma_try_lock_callback;
+
+        EventRmaReleaseLockFilter event_rma_release_lock_callback;
+
+        EventRmaSyncFilter event_rma_sync_callback;
+
+        EventRmaWaitChangeFilter event_rma_wait_change_callback;
+
+        EventRmaPutFilter event_rma_put_callback;
+
+        EventRmaGetFilter event_rma_get_callback;
+
+        EventRmaAtomicFilter event_rma_atomic_callback;
+
+        EventRmaOpCompleteBlockingFilter
+            event_rma_op_complete_blocking_callback;
+
+        EventRmaOpCompleteNonBlockingFilter
+            event_rma_op_complete_non_blocking_callback;
+
+        EventRmaOpTestFilter event_rma_op_test_callback;
+
+        EventRmaOpCompleteRemoteFilter event_rma_op_complete_remote_callback;
+
+        EventThreadForkFilter event_thread_fork_callback;
+
+        EventThreadJoinFilter event_thread_join_callback;
+
+        EventThreadTeamBeginFilter event_thread_team_begin_callback;
+
+        EventThreadTeamEndFilter event_thread_team_end_callback;
+
+        EventThreadAcquireLockFilter event_thread_acquire_lock_callback;
+
+        EventThreadReleaseLockFilter event_thread_release_lock_callback;
+
+        EventThreadTaskCreateFilter event_thread_task_create_callback;
+
+        EventThreadTaskSwitchFilter event_thread_task_switch_callback;
+
+        EventThreadTaskCompleteFilter event_thread_task_complete_callback;
+
+        EventThreadCreateFilter event_thread_create_callback;
+
+        EventThreadBeginFilter event_thread_begin_callback;
+
+        EventThreadWaitFilter event_thread_wait_callback;
+
+        EventThreadEndFilter event_thread_end_callback;
+
+        EventCallingContextEnterFilter event_calling_context_enter_callback;
+
+        EventCallingContextLeaveFilter event_calling_context_leave_callback;
+
+        EventCallingContextSampleFilter event_calling_context_sample_callback;
+
+        EventIoCreateHandleFilter event_io_create_handle_callback;
+
+        EventIoDestroyHandleFilter event_io_destroy_handle_callback;
+
+        EventIoDuplicateHandleFilter event_io_duplicate_handle_callback;
+
+        EventIoSeekFilter event_io_seek_callback;
+
+        EventIoChangeStatusFlagsFilter event_io_change_status_flags_callback;
+
+        EventIoDeleteFileFilter event_io_delete_file_callback;
+
+        EventIoOperationBeginFilter event_io_operation_begin_callback;
+
+        EventIoOperationTestFilter event_io_operation_test_callback;
+
+        EventIoOperationIssuedFilter event_io_operation_issued_callback;
+
+        EventIoOperationCompleteFilter event_io_operation_complete_callback;
+
+        EventIoOperationCancelledFilter event_io_operation_cancelled_callback;
+
+        EventIoAcquireLockFilter event_io_acquire_lock_callback;
+
+        EventIoReleaseLockFilter event_io_release_lock_callback;
+
+        EventIoTryLockFilter event_io_try_lock_callback;
+
+        EventProgramBeginFilter event_program_begin_callback;
+
+        EventProgramEndFilter event_program_end_callback;
+    };
+    virtual Callbacks get_callbacks() = 0;
+};
+
 template <typename T> class Filter {
   public:
     inline void add(T &f) { m_callbacks.push_back(f); }

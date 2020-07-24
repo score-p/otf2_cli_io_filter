@@ -70,6 +70,39 @@ OTF2_LocationRef
 
 @otf2 endfor
 
+class IFilterCallbacks
+{
+public:
+    struct Callbacks
+    {
+        /*
+         * Global definition callbacks
+         */
+        @otf2 for def in defs|global_defs:
+
+        Global@@def.name@@Filter global_@@def.lower@@_callback;
+
+        @otf2 endfor
+        /*
+         * Local definition callbacks
+         */
+        @otf2 for def in defs|local_defs:
+
+        Local@@def.name@@Filter local_@@def.lower@@_callback;
+
+        @otf2 endfor
+        /*
+        * Event filter callbacks
+        */
+        @otf2 for event in events:
+
+        Event@@event.name@@Filter event_@@event.lower@@_callback;
+
+        @otf2 endfor
+    };
+    virtual Callbacks get_callbacks() = 0;
+};
+
 template<typename T>
 class Filter
 {

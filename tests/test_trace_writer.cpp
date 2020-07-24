@@ -1,3 +1,4 @@
+#include <functional>
 #include <trace_writer.hpp>
 #include <trace_reader.hpp>
 #include <string>
@@ -7,6 +8,8 @@
 
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
+
+#include "filter.hpp"
 
 #include "test_handler.hpp"
 #include "test_trace.hpp"
@@ -40,11 +43,49 @@ TEST_CASE( "Test writer API", "[trace_write]" )
     REQUIRE(err != static_cast<std::uintmax_t>(-1));
 }
 
-class MyRegionFilter
+class MyRegionFilter : public IFilterCallbacks
 {
 public:
+    virtual Callbacks
+    get_callbacks() override
+    {
+        Callbacks cbs;
+        cbs.global_string_callback = std::bind(&MyRegionFilter::filter_string_def,
+                                               this,
+                                               std::placeholders::_1,
+                                               std::placeholders::_2);
 
-    static bool
+        cbs.global_region_callback = std::bind(&MyRegionFilter::filter_region_def,
+                                               this,
+                                               std::placeholders::_1,
+                                               std::placeholders::_2,
+                                               std::placeholders::_3,
+                                               std::placeholders::_4,
+                                               std::placeholders::_5,
+                                               std::placeholders::_6,
+                                               std::placeholders::_7,
+                                               std::placeholders::_8,
+                                               std::placeholders::_9,
+                                               std::placeholders::_10);
+
+        cbs.event_enter_callback = std::bind(&MyRegionFilter::filter_enter_event,
+                                               this,
+                                               std::placeholders::_1,
+                                               std::placeholders::_2,
+                                               std::placeholders::_3,
+                                               std::placeholders::_4);
+
+        cbs.event_leave_callback = std::bind(&MyRegionFilter::filter_leave_event,
+                                               this,
+                                               std::placeholders::_1,
+                                               std::placeholders::_2,
+                                               std::placeholders::_3,
+                                               std::placeholders::_4);
+        return cbs;
+    }
+
+private:
+    bool
     filter_string_def(OTF2_StringRef self, const char * string)
     {
         if (strcmp(string, TestTrace::RegionName.data()) == 0)
@@ -54,7 +95,7 @@ public:
         return false;
     }
 
-    static bool
+    bool
     filter_region_def(OTF2_RegionRef self, OTF2_StringRef name,
                       OTF2_StringRef canonicalName, OTF2_StringRef description,
                       OTF2_RegionRole regionRole, OTF2_Paradigm paradigm,
@@ -68,7 +109,7 @@ public:
         return false;
     }
 
-    static bool
+    bool
     filter_enter_event(OTF2_LocationRef location,
                                   OTF2_TimeStamp time,
                                   OTF2_AttributeList *attributes,
@@ -81,7 +122,7 @@ public:
         return false;
     }
 
-    static bool
+    bool
     filter_leave_event(OTF2_LocationRef location,
                        OTF2_TimeStamp time,
                        OTF2_AttributeList *attributes,
@@ -94,13 +135,9 @@ public:
         return false;
     }
 
-private:
-    static OTF2_StringRef m_string_ref;
-    static OTF2_RegionRef m_region_ref;
+    OTF2_StringRef m_string_ref;
+    OTF2_RegionRef m_region_ref;
 };
-
-OTF2_StringRef MyRegionFilter::m_string_ref = 0;
-OTF2_RegionRef MyRegionFilter::m_region_ref = 0;
 
 TEST_CASE( "Test filter API", "[trace_write_simple_filter]" )
 {
@@ -111,11 +148,9 @@ TEST_CASE( "Test filter API", "[trace_write_simple_filter]" )
     REQUIRE(fs::is_directory(temp));
     {
         TraceWriter tw(temp.string());
+        MyRegionFilter filter;
 
-        tw.registerStringGlobalFilter(MyRegionFilter::filter_string_def);
-        tw.registerRegionGlobalFilter(MyRegionFilter::filter_region_def);
-        tw.registerEnterEventFilter(MyRegionFilter::filter_enter_event);
-        tw.registerLeaveEventFilter(MyRegionFilter::filter_leave_event);
+        tw.register_filter(filter);
 
         std::string trace_input(TestTrace::TestTracePath);
         trace_input += std::string("/") + std::string(TestTrace::TestTraceName) + std::string(".otf2");
