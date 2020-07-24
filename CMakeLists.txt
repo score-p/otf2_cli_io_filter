@@ -41,7 +41,7 @@ SET(TEMPLATE_CPP_FILES
 )
 
 SET(TEST_TEMPLATE_HPP_FILES
-    "test_handler.tmpl.hpp"
+    "itest_handler.tmpl.hpp"
 )
 
 add_custom_target(generate)
