@@ -1,5 +1,5 @@
-#include <filtered_writer.hpp>
 #include <trace_reader.hpp>
+#include <trace_writer.hpp>
 
 int main(int argc, char *argv[]) {
     std::string path_out = "./bar";
