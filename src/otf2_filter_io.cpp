@@ -1,4 +1,3 @@
-#include <filtered_writer.hpp>
 #include <trace_reader.hpp>
 
 int main(int argc, char *argv[]) {
