@@ -12,7 +12,8 @@ extern "C" {
 #include <otf2/otf2.h>
 }
 
-#include "otf2_handler.hpp"
+#include <filter.hpp>
+#include <otf2_handler.hpp>
 
 using archive_deleter = std::function<void(OTF2_Archive *)>;
 using archive_ptr = std::unique_ptr<OTF2_Archive, archive_deleter>;
@@ -856,11 +857,174 @@ class TraceWriter : public Otf2Handler {
                                        OTF2_AttributeList *attributes,
                                        int64_t exitStatus) override;
 
+    void register_filter(IFilterCallbacks &filter);
+
   private:
     static OTF2_FlushCallbacks m_flush_callbacks;
     archive_ptr m_archive;
     OTF2_GlobalDefWriter *m_def_writer;
     std::unordered_set<OTF2_LocationRef> m_locations;
+
+    Filter<GlobalClockPropertiesFilter> m_global_ClockProperties_filter;
+    Filter<GlobalParadigmFilter> m_global_Paradigm_filter;
+    Filter<GlobalParadigmPropertyFilter> m_global_ParadigmProperty_filter;
+    Filter<GlobalIoParadigmFilter> m_global_IoParadigm_filter;
+    Filter<GlobalStringFilter> m_global_String_filter;
+    Filter<GlobalAttributeFilter> m_global_Attribute_filter;
+    Filter<GlobalSystemTreeNodeFilter> m_global_SystemTreeNode_filter;
+    Filter<GlobalLocationGroupFilter> m_global_LocationGroup_filter;
+    Filter<GlobalLocationFilter> m_global_Location_filter;
+    Filter<GlobalRegionFilter> m_global_Region_filter;
+    Filter<GlobalCallsiteFilter> m_global_Callsite_filter;
+    Filter<GlobalCallpathFilter> m_global_Callpath_filter;
+    Filter<GlobalGroupFilter> m_global_Group_filter;
+    Filter<GlobalMetricMemberFilter> m_global_MetricMember_filter;
+    Filter<GlobalMetricClassFilter> m_global_MetricClass_filter;
+    Filter<GlobalMetricInstanceFilter> m_global_MetricInstance_filter;
+    Filter<GlobalCommFilter> m_global_Comm_filter;
+    Filter<GlobalParameterFilter> m_global_Parameter_filter;
+    Filter<GlobalRmaWinFilter> m_global_RmaWin_filter;
+    Filter<GlobalMetricClassRecorderFilter> m_global_MetricClassRecorder_filter;
+    Filter<GlobalSystemTreeNodePropertyFilter>
+        m_global_SystemTreeNodeProperty_filter;
+    Filter<GlobalSystemTreeNodeDomainFilter>
+        m_global_SystemTreeNodeDomain_filter;
+    Filter<GlobalLocationGroupPropertyFilter>
+        m_global_LocationGroupProperty_filter;
+    Filter<GlobalLocationPropertyFilter> m_global_LocationProperty_filter;
+    Filter<GlobalCartDimensionFilter> m_global_CartDimension_filter;
+    Filter<GlobalCartTopologyFilter> m_global_CartTopology_filter;
+    Filter<GlobalCartCoordinateFilter> m_global_CartCoordinate_filter;
+    Filter<GlobalSourceCodeLocationFilter> m_global_SourceCodeLocation_filter;
+    Filter<GlobalCallingContextFilter> m_global_CallingContext_filter;
+    Filter<GlobalCallingContextPropertyFilter>
+        m_global_CallingContextProperty_filter;
+    Filter<GlobalInterruptGeneratorFilter> m_global_InterruptGenerator_filter;
+    Filter<GlobalIoFilePropertyFilter> m_global_IoFileProperty_filter;
+    Filter<GlobalIoRegularFileFilter> m_global_IoRegularFile_filter;
+    Filter<GlobalIoDirectoryFilter> m_global_IoDirectory_filter;
+    Filter<GlobalIoHandleFilter> m_global_IoHandle_filter;
+    Filter<GlobalIoPreCreatedHandleStateFilter>
+        m_global_IoPreCreatedHandleState_filter;
+    Filter<GlobalCallpathParameterFilter> m_global_CallpathParameter_filter;
+
+    Filter<LocalMappingTableFilter> m_local_MappingTable_filter;
+    Filter<LocalClockOffsetFilter> m_local_ClockOffset_filter;
+    Filter<LocalStringFilter> m_local_String_filter;
+    Filter<LocalAttributeFilter> m_local_Attribute_filter;
+    Filter<LocalSystemTreeNodeFilter> m_local_SystemTreeNode_filter;
+    Filter<LocalLocationGroupFilter> m_local_LocationGroup_filter;
+    Filter<LocalLocationFilter> m_local_Location_filter;
+    Filter<LocalRegionFilter> m_local_Region_filter;
+    Filter<LocalCallsiteFilter> m_local_Callsite_filter;
+    Filter<LocalCallpathFilter> m_local_Callpath_filter;
+    Filter<LocalGroupFilter> m_local_Group_filter;
+    Filter<LocalMetricMemberFilter> m_local_MetricMember_filter;
+    Filter<LocalMetricClassFilter> m_local_MetricClass_filter;
+    Filter<LocalMetricInstanceFilter> m_local_MetricInstance_filter;
+    Filter<LocalCommFilter> m_local_Comm_filter;
+    Filter<LocalParameterFilter> m_local_Parameter_filter;
+    Filter<LocalRmaWinFilter> m_local_RmaWin_filter;
+    Filter<LocalMetricClassRecorderFilter> m_local_MetricClassRecorder_filter;
+    Filter<LocalSystemTreeNodePropertyFilter>
+        m_local_SystemTreeNodeProperty_filter;
+    Filter<LocalSystemTreeNodeDomainFilter> m_local_SystemTreeNodeDomain_filter;
+    Filter<LocalLocationGroupPropertyFilter>
+        m_local_LocationGroupProperty_filter;
+    Filter<LocalLocationPropertyFilter> m_local_LocationProperty_filter;
+    Filter<LocalCartDimensionFilter> m_local_CartDimension_filter;
+    Filter<LocalCartTopologyFilter> m_local_CartTopology_filter;
+    Filter<LocalCartCoordinateFilter> m_local_CartCoordinate_filter;
+    Filter<LocalSourceCodeLocationFilter> m_local_SourceCodeLocation_filter;
+    Filter<LocalCallingContextFilter> m_local_CallingContext_filter;
+    Filter<LocalCallingContextPropertyFilter>
+        m_local_CallingContextProperty_filter;
+    Filter<LocalInterruptGeneratorFilter> m_local_InterruptGenerator_filter;
+    Filter<LocalIoFilePropertyFilter> m_local_IoFileProperty_filter;
+    Filter<LocalIoRegularFileFilter> m_local_IoRegularFile_filter;
+    Filter<LocalIoDirectoryFilter> m_local_IoDirectory_filter;
+    Filter<LocalIoHandleFilter> m_local_IoHandle_filter;
+    Filter<LocalIoPreCreatedHandleStateFilter>
+        m_local_IoPreCreatedHandleState_filter;
+    Filter<LocalCallpathParameterFilter> m_local_CallpathParameter_filter;
+
+    Filter<EventBufferFlushFilter> m_event_BufferFlush_filter;
+    Filter<EventMeasurementOnOffFilter> m_event_MeasurementOnOff_filter;
+    Filter<EventEnterFilter> m_event_Enter_filter;
+    Filter<EventLeaveFilter> m_event_Leave_filter;
+    Filter<EventMpiSendFilter> m_event_MpiSend_filter;
+    Filter<EventMpiIsendFilter> m_event_MpiIsend_filter;
+    Filter<EventMpiIsendCompleteFilter> m_event_MpiIsendComplete_filter;
+    Filter<EventMpiIrecvRequestFilter> m_event_MpiIrecvRequest_filter;
+    Filter<EventMpiRecvFilter> m_event_MpiRecv_filter;
+    Filter<EventMpiIrecvFilter> m_event_MpiIrecv_filter;
+    Filter<EventMpiRequestTestFilter> m_event_MpiRequestTest_filter;
+    Filter<EventMpiRequestCancelledFilter> m_event_MpiRequestCancelled_filter;
+    Filter<EventMpiCollectiveBeginFilter> m_event_MpiCollectiveBegin_filter;
+    Filter<EventMpiCollectiveEndFilter> m_event_MpiCollectiveEnd_filter;
+    Filter<EventOmpForkFilter> m_event_OmpFork_filter;
+    Filter<EventOmpJoinFilter> m_event_OmpJoin_filter;
+    Filter<EventOmpAcquireLockFilter> m_event_OmpAcquireLock_filter;
+    Filter<EventOmpReleaseLockFilter> m_event_OmpReleaseLock_filter;
+    Filter<EventOmpTaskCreateFilter> m_event_OmpTaskCreate_filter;
+    Filter<EventOmpTaskSwitchFilter> m_event_OmpTaskSwitch_filter;
+    Filter<EventOmpTaskCompleteFilter> m_event_OmpTaskComplete_filter;
+    Filter<EventMetricFilter> m_event_Metric_filter;
+    Filter<EventParameterStringFilter> m_event_ParameterString_filter;
+    Filter<EventParameterIntFilter> m_event_ParameterInt_filter;
+    Filter<EventParameterUnsignedIntFilter> m_event_ParameterUnsignedInt_filter;
+    Filter<EventRmaWinCreateFilter> m_event_RmaWinCreate_filter;
+    Filter<EventRmaWinDestroyFilter> m_event_RmaWinDestroy_filter;
+    Filter<EventRmaCollectiveBeginFilter> m_event_RmaCollectiveBegin_filter;
+    Filter<EventRmaCollectiveEndFilter> m_event_RmaCollectiveEnd_filter;
+    Filter<EventRmaGroupSyncFilter> m_event_RmaGroupSync_filter;
+    Filter<EventRmaRequestLockFilter> m_event_RmaRequestLock_filter;
+    Filter<EventRmaAcquireLockFilter> m_event_RmaAcquireLock_filter;
+    Filter<EventRmaTryLockFilter> m_event_RmaTryLock_filter;
+    Filter<EventRmaReleaseLockFilter> m_event_RmaReleaseLock_filter;
+    Filter<EventRmaSyncFilter> m_event_RmaSync_filter;
+    Filter<EventRmaWaitChangeFilter> m_event_RmaWaitChange_filter;
+    Filter<EventRmaPutFilter> m_event_RmaPut_filter;
+    Filter<EventRmaGetFilter> m_event_RmaGet_filter;
+    Filter<EventRmaAtomicFilter> m_event_RmaAtomic_filter;
+    Filter<EventRmaOpCompleteBlockingFilter>
+        m_event_RmaOpCompleteBlocking_filter;
+    Filter<EventRmaOpCompleteNonBlockingFilter>
+        m_event_RmaOpCompleteNonBlocking_filter;
+    Filter<EventRmaOpTestFilter> m_event_RmaOpTest_filter;
+    Filter<EventRmaOpCompleteRemoteFilter> m_event_RmaOpCompleteRemote_filter;
+    Filter<EventThreadForkFilter> m_event_ThreadFork_filter;
+    Filter<EventThreadJoinFilter> m_event_ThreadJoin_filter;
+    Filter<EventThreadTeamBeginFilter> m_event_ThreadTeamBegin_filter;
+    Filter<EventThreadTeamEndFilter> m_event_ThreadTeamEnd_filter;
+    Filter<EventThreadAcquireLockFilter> m_event_ThreadAcquireLock_filter;
+    Filter<EventThreadReleaseLockFilter> m_event_ThreadReleaseLock_filter;
+    Filter<EventThreadTaskCreateFilter> m_event_ThreadTaskCreate_filter;
+    Filter<EventThreadTaskSwitchFilter> m_event_ThreadTaskSwitch_filter;
+    Filter<EventThreadTaskCompleteFilter> m_event_ThreadTaskComplete_filter;
+    Filter<EventThreadCreateFilter> m_event_ThreadCreate_filter;
+    Filter<EventThreadBeginFilter> m_event_ThreadBegin_filter;
+    Filter<EventThreadWaitFilter> m_event_ThreadWait_filter;
+    Filter<EventThreadEndFilter> m_event_ThreadEnd_filter;
+    Filter<EventCallingContextEnterFilter> m_event_CallingContextEnter_filter;
+    Filter<EventCallingContextLeaveFilter> m_event_CallingContextLeave_filter;
+    Filter<EventCallingContextSampleFilter> m_event_CallingContextSample_filter;
+    Filter<EventIoCreateHandleFilter> m_event_IoCreateHandle_filter;
+    Filter<EventIoDestroyHandleFilter> m_event_IoDestroyHandle_filter;
+    Filter<EventIoDuplicateHandleFilter> m_event_IoDuplicateHandle_filter;
+    Filter<EventIoSeekFilter> m_event_IoSeek_filter;
+    Filter<EventIoChangeStatusFlagsFilter> m_event_IoChangeStatusFlags_filter;
+    Filter<EventIoDeleteFileFilter> m_event_IoDeleteFile_filter;
+    Filter<EventIoOperationBeginFilter> m_event_IoOperationBegin_filter;
+    Filter<EventIoOperationTestFilter> m_event_IoOperationTest_filter;
+    Filter<EventIoOperationIssuedFilter> m_event_IoOperationIssued_filter;
+    Filter<EventIoOperationCompleteFilter> m_event_IoOperationComplete_filter;
+    Filter<EventIoOperationCancelledFilter> m_event_IoOperationCancelled_filter;
+    Filter<EventIoAcquireLockFilter> m_event_IoAcquireLock_filter;
+    Filter<EventIoReleaseLockFilter> m_event_IoReleaseLock_filter;
+    Filter<EventIoTryLockFilter> m_event_IoTryLock_filter;
+    Filter<EventProgramBeginFilter> m_event_ProgramBegin_filter;
+    Filter<EventProgramEndFilter> m_event_ProgramEnd_filter;
 };
 
 #endif /* TRACE_WRITER_H */

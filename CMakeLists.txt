@@ -54,6 +54,11 @@ foreach(infilename ${TEMPLATE_HPP_FILES})
     add_dependencies(generate ${outfilename})
 endforeach()
 
+generate_otf2("filter.hpp"
+              ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/filter.tmpl.hpp
+              ${CMAKE_CURRENT_SOURCE_DIR}/src/filter/include/filter.hpp)
+add_dependencies(generate "filter.hpp")
+
 foreach(infilename ${TEMPLATE_CPP_FILES})
     string(REGEX REPLACE ".tmpl.cpp\$" ".cpp" outfilename ${infilename})
     set(infile_path ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/${infilename})
