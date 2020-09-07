@@ -59,5 +59,18 @@ add_test(NAME test_reader
          COMMAND test_trace_reader
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
 
-
 set_tests_properties(test_reader PROPERTIES DEPENDS create_test)
+
+##############################################################################
+# I/O File Filter
+##############################################################################
+add_executable(test_io_filter test_io_filter.cpp
+               ${PROJECT_SOURCE_DIR}/src/filter/io_file_filter.cpp)
+
+target_include_directories(test_io_filter PUBLIC
+                           ${PROJECT_SOURCE_DIR}/src/filter/include
+                           ${PROJECT_SOURCE_DIR}/externals/catch2/include)
+
+add_test(NAME test_io_filter
+         COMMAND test_io_filter
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
