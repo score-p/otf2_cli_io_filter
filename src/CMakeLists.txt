@@ -30,6 +30,8 @@ target_link_libraries(otf2_filter_io PUBLIC otf2::otf2)
 target_include_directories(otf2_filter_io PUBLIC
     ${PROJECT_SOURCE_DIR}/src/include
     ${PROJECT_SOURCE_DIR}/src/filter/include
-    ${PROJECT_SOURCE_DIR}/src/include)
+    ${PROJECT_SOURCE_DIR}/externals/cxxopts/include)
 
 target_compile_options(otf2_filter_io PRIVATE -Wall -Werror)
+
+install(TARGETS otf2_filter_io DESTINATION "bin")
