@@ -49,14 +49,27 @@ int main()
     OTF2_Archive_SetSerialCollectiveCallbacks( archive );
     OTF2_Archive_OpenEvtFiles( archive );
     OTF2_EvtWriter* evt_writer = OTF2_Archive_GetEvtWriter( archive, 0 );
+
+    OTF2_EvtWriter_Enter( evt_writer,
+                          NULL,
+                          get_time(),
+                          1 /* region */ );
+
     OTF2_EvtWriter_Enter( evt_writer,
                           NULL,
                           get_time(),
                           0 /* region */ );
+
     OTF2_EvtWriter_Leave( evt_writer,
                           NULL,
                           get_time(),
                           0 /* region */ );
+
+    OTF2_EvtWriter_Leave( evt_writer,
+                          NULL,
+                          get_time(),
+                          1 /* region */ );
+
     OTF2_Archive_CloseEvtWriter( archive, evt_writer );
     OTF2_Archive_CloseEvtFiles( archive );
     OTF2_Archive_OpenDefFiles( archive );
@@ -67,7 +80,7 @@ int main()
     OTF2_GlobalDefWriter_WriteClockProperties( global_def_writer,
                                                1 /* 1 tick per second */,
                                                0 /* epoch */,
-                                               2 /* length */ );
+                                               3 /* length */ );
     OTF2_GlobalDefWriter_WriteString( global_def_writer, 0, "" );
     OTF2_GlobalDefWriter_WriteString( global_def_writer, 1, TestTrace::LocationGroupName.data() );
     OTF2_GlobalDefWriter_WriteString( global_def_writer, 2, TestTrace::LocactionName.data() );
@@ -76,6 +89,7 @@ int main()
     OTF2_GlobalDefWriter_WriteString( global_def_writer, 5, "Computes something" );
     OTF2_GlobalDefWriter_WriteString( global_def_writer, 6, "MyHost" );
     OTF2_GlobalDefWriter_WriteString( global_def_writer, 7, "node" );
+    OTF2_GlobalDefWriter_WriteString( global_def_writer, 8, "MAIN" );
     OTF2_GlobalDefWriter_WriteRegion( global_def_writer,
                                       0 /* id */,
                                       3 /* region name  */,
@@ -87,16 +101,31 @@ int main()
                                       0 /* source file */,
                                       0 /* begin lno */,
                                       0 /* end lno */ );
+
+    OTF2_GlobalDefWriter_WriteRegion( global_def_writer,
+                                      1 /* id */,
+                                      8 /* region name  */,
+                                      4 /* alternative name */,
+                                      5 /* description */,
+                                      OTF2_REGION_ROLE_FUNCTION,
+                                      OTF2_PARADIGM_USER,
+                                      OTF2_REGION_FLAG_NONE,
+                                      0 /* source file */,
+                                      0 /* begin lno */,
+                                      0 /* end lno */ );
+
     OTF2_GlobalDefWriter_WriteSystemTreeNode( global_def_writer,
                                               0 /* id */,
                                               6 /* name */,
                                               7 /* class */,
                                               OTF2_UNDEFINED_SYSTEM_TREE_NODE /* parent */ );
+
     OTF2_GlobalDefWriter_WriteLocationGroup( global_def_writer,
                                              0 /* id */,
                                              1 /* name */,
                                              OTF2_LOCATION_GROUP_TYPE_PROCESS,
                                              0 /* system tree */ );
+
     OTF2_GlobalDefWriter_WriteLocation( global_def_writer,
                                         0 /* id */,
                                         2 /* name */,

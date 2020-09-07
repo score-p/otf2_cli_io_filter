@@ -5,6 +5,7 @@ set(OTF2_FILTER_FMT_SRC
     include/otf2_handler.hpp
     include/trace_reader.hpp
     include/trace_writer.hpp
+    filter/include/filter.hpp
     global_callbacks.cpp
     local_callbacks.cpp
     local_reader.cpp
@@ -24,6 +25,8 @@ add_executable(otf2_filter_io otf2_filter_io.cpp
 target_link_libraries(otf2_filter_io PUBLIC otf2::otf2)
 
 target_include_directories(otf2_filter_io PUBLIC
+    ${PROJECT_SOURCE_DIR}/src/include
+    ${PROJECT_SOURCE_DIR}/src/filter/include
     ${PROJECT_SOURCE_DIR}/src/include)
 
 target_compile_options(otf2_filter_io PRIVATE -Wall -Werror)
