@@ -3,27 +3,40 @@
 
 #include <otf2_handler.hpp>
 
-extern "C" {
+extern "C"
+{
 #include <otf2/otf2.h>
 }
 
-class LocalReader {
+class LocalReader
+{
   public:
-    LocalReader(Otf2Handler &handler) : m_handler(handler) {}
+    LocalReader(Otf2Handler &handler) : m_handler(handler)
+    {
+    }
 
-    void operator()(OTF2_Reader *reader, std::vector<size_t> locations);
+    void
+    operator()(OTF2_Reader *reader, std::vector<size_t> locations);
 
-    size_t current_location() { return m_current_location; }
+    size_t
+    current_location()
+    {
+        return m_current_location;
+    }
 
-    Otf2Handler &handler() { return m_handler; }
+    Otf2Handler &
+    handler()
+    {
+        return m_handler;
+    }
 
   private:
-    inline void read_events(OTF2_Reader *reader,
-                            const std::vector<size_t> &locations);
+    inline void
+    read_events(OTF2_Reader *reader, const std::vector<size_t> &locations);
 
-    inline void read_definitions(OTF2_Reader *reader,
-                                 const std::vector<size_t> &locations);
+    inline void
+    read_definitions(OTF2_Reader *reader, const std::vector<size_t> &locations);
 
     Otf2Handler &m_handler;
-    size_t m_current_location;
+    size_t       m_current_location;
 };
