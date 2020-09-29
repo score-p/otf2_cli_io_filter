@@ -292,5 +292,6 @@ LocalReader::operator()(OTF2_Reader *reader, std::vector<size_t> locations)
     if (number_of_locations_to_read > 0)
     {
         read_events(reader, locations);
+        read_definitions(reader, locations);
     }
 }
