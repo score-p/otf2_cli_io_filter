@@ -9,9 +9,11 @@ LocalReader::read_definitions(OTF2_Reader* reader, const std::vector<size_t> & l
     OTF2_DefReaderCallbacks* def_callbacks = OTF2_DefReaderCallbacks_New();
 
     @otf2 for def in defs|local_defs:
+    @otf2 if "MappingTable" == def.name or "ClockOffset" == def.name:
 
     OTF2_DefReaderCallbacks_Set@@def.name@@Callback(def_callbacks, definition::Local@@def.name@@Cb);
 
+    @otf2 endif
     @otf2 endfor
 
     for (auto location: locations)
@@ -19,7 +21,9 @@ LocalReader::read_definitions(OTF2_Reader* reader, const std::vector<size_t> & l
         if ( successful_open_def_files )
         {
             OTF2_DefReader* def_reader = OTF2_Reader_GetDefReader( reader, location );
-            OTF2_Reader_RegisterDefCallbacks(reader, def_reader, def_callbacks, this);
+
+            ReaderLocationPair reader_location{*this, location};
+            OTF2_Reader_RegisterDefCallbacks(reader, def_reader, def_callbacks, &reader_location);
             if ( def_reader )
             {
                 uint64_t def_reads = 0;
@@ -90,5 +94,6 @@ LocalReader::operator() (OTF2_Reader* reader, std::vector<size_t> locations)
     if ( number_of_locations_to_read > 0 )
     {
         read_events(reader, locations);
+        read_definitions(reader, locations);
     }
 }

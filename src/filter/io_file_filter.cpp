@@ -14,9 +14,7 @@ IoFilterPattern::IoFilterPattern(const fs::path &pattern_file)
     std::ifstream in(pattern_file, std::ios::in);
     if (!in.is_open())
     {
-        throw std::runtime_error("Could not load pattern "
-                                 "file: " +
-                                 pattern_file.string());
+        throw std::runtime_error("Could not load pattern file: " + pattern_file.string());
     }
     std::string line;
     while (std::getline(in, line))
@@ -64,7 +62,6 @@ IoFileFilter::add_definition_callbacks(Callbacks &c)
         auto search = m_strings.find(name);
         if (search != m_strings.end() && m_pattern.filterFile(search->second))
         {
-            std::cout << "Filter " << search->second << '\n';
             m_io_files.insert(self);
             return true;
         }

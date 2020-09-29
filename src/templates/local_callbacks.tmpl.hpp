@@ -9,7 +9,7 @@ extern "C"
 namespace event
 {
     @otf2 for event in events:
-    
+
     OTF2_CallbackCode
     Local@@event.name@@Cb(OTF2_LocationRef    location,
                      OTF2_TimeStamp      time,
@@ -23,10 +23,12 @@ namespace event
 namespace definition
 {
     @otf2 for def in defs|local_defs:
+    @otf2 if "MappingTable" == def.name or "ClockOffset" == def.name:
 
     OTF2_CallbackCode
     Local@@def.name@@Cb(void* userData @@def.funcargs()@@);
 
+    @otf2 endif
     @otf2 endfor
 }
 #endif /* EVENT_CALLBACKS_HPP */

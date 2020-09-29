@@ -71,19 +71,17 @@ TraceWriter::handleGlobal@@def.name@@(@@def.funcargs(leading_comma=False)@@)
 @otf2 endfor
 
 @otf2 for def in defs|local_defs:
+@otf2 if "MappingTable" == def.name or "ClockOffset" == def.name:
 
 void
 TraceWriter::handleLocal@@def.name@@(OTF2_LocationRef readLocation,
                                      @@def.funcargs(leading_comma=False)@@)
 {
-    bool filter_out = m_local_@@def.name@@_filter.process(readLocation@@def.callargs()@@);
-    if(! filter_out)
-    {
-        auto * local_def_writer = OTF2_Archive_GetDefWriter(m_archive.get(), readLocation);
-        OTF2_DefWriter_Write@@def.name@@(local_def_writer@@def.callargs()@@);
-    }
+    auto * local_def_writer = OTF2_Archive_GetDefWriter(m_archive.get(), readLocation);
+    OTF2_DefWriter_Write@@def.name@@(local_def_writer@@def.callargs()@@);
 }
 
+@otf2 endif
 @otf2 endfor
 
 @otf2 for event in events:
@@ -114,13 +112,6 @@ TraceWriter::register_filter(IFilterCallbacks & filter)
     if(cbs.global_@@def.lower@@_callback)
     {
         m_global_@@def.name@@_filter.add(cbs.global_@@def.lower@@_callback);
-    }
-    @otf2 endfor
-
-    @otf2 for def in defs|local_defs:
-    if(cbs.local_@@def.lower@@_callback)
-    {
-        m_local_@@def.name@@_filter.add(cbs.local_@@def.lower@@_callback);
     }
     @otf2 endfor
 
