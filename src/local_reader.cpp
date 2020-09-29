@@ -12,87 +12,19 @@ LocalReader::read_definitions(OTF2_Reader *reader, const std::vector<size_t> &lo
 
     OTF2_DefReaderCallbacks_SetClockOffsetCallback(def_callbacks, definition::LocalClockOffsetCb);
 
-    OTF2_DefReaderCallbacks_SetStringCallback(def_callbacks, definition::LocalStringCb);
-
-    OTF2_DefReaderCallbacks_SetAttributeCallback(def_callbacks, definition::LocalAttributeCb);
-
-    OTF2_DefReaderCallbacks_SetSystemTreeNodeCallback(def_callbacks, definition::LocalSystemTreeNodeCb);
-
-    OTF2_DefReaderCallbacks_SetLocationGroupCallback(def_callbacks, definition::LocalLocationGroupCb);
-
-    OTF2_DefReaderCallbacks_SetLocationCallback(def_callbacks, definition::LocalLocationCb);
-
-    OTF2_DefReaderCallbacks_SetRegionCallback(def_callbacks, definition::LocalRegionCb);
-
-    OTF2_DefReaderCallbacks_SetCallsiteCallback(def_callbacks, definition::LocalCallsiteCb);
-
-    OTF2_DefReaderCallbacks_SetCallpathCallback(def_callbacks, definition::LocalCallpathCb);
-
-    OTF2_DefReaderCallbacks_SetGroupCallback(def_callbacks, definition::LocalGroupCb);
-
-    OTF2_DefReaderCallbacks_SetMetricMemberCallback(def_callbacks, definition::LocalMetricMemberCb);
-
-    OTF2_DefReaderCallbacks_SetMetricClassCallback(def_callbacks, definition::LocalMetricClassCb);
-
-    OTF2_DefReaderCallbacks_SetMetricInstanceCallback(def_callbacks, definition::LocalMetricInstanceCb);
-
-    OTF2_DefReaderCallbacks_SetCommCallback(def_callbacks, definition::LocalCommCb);
-
-    OTF2_DefReaderCallbacks_SetParameterCallback(def_callbacks, definition::LocalParameterCb);
-
-    OTF2_DefReaderCallbacks_SetRmaWinCallback(def_callbacks, definition::LocalRmaWinCb);
-
-    OTF2_DefReaderCallbacks_SetMetricClassRecorderCallback(def_callbacks, definition::LocalMetricClassRecorderCb);
-
-    OTF2_DefReaderCallbacks_SetSystemTreeNodePropertyCallback(def_callbacks, definition::LocalSystemTreeNodePropertyCb);
-
-    OTF2_DefReaderCallbacks_SetSystemTreeNodeDomainCallback(def_callbacks, definition::LocalSystemTreeNodeDomainCb);
-
-    OTF2_DefReaderCallbacks_SetLocationGroupPropertyCallback(def_callbacks, definition::LocalLocationGroupPropertyCb);
-
-    OTF2_DefReaderCallbacks_SetLocationPropertyCallback(def_callbacks, definition::LocalLocationPropertyCb);
-
-    OTF2_DefReaderCallbacks_SetCartDimensionCallback(def_callbacks, definition::LocalCartDimensionCb);
-
-    OTF2_DefReaderCallbacks_SetCartTopologyCallback(def_callbacks, definition::LocalCartTopologyCb);
-
-    OTF2_DefReaderCallbacks_SetCartCoordinateCallback(def_callbacks, definition::LocalCartCoordinateCb);
-
-    OTF2_DefReaderCallbacks_SetSourceCodeLocationCallback(def_callbacks, definition::LocalSourceCodeLocationCb);
-
-    OTF2_DefReaderCallbacks_SetCallingContextCallback(def_callbacks, definition::LocalCallingContextCb);
-
-    OTF2_DefReaderCallbacks_SetCallingContextPropertyCallback(def_callbacks, definition::LocalCallingContextPropertyCb);
-
-    OTF2_DefReaderCallbacks_SetInterruptGeneratorCallback(def_callbacks, definition::LocalInterruptGeneratorCb);
-
-    OTF2_DefReaderCallbacks_SetIoFilePropertyCallback(def_callbacks, definition::LocalIoFilePropertyCb);
-
-    OTF2_DefReaderCallbacks_SetIoRegularFileCallback(def_callbacks, definition::LocalIoRegularFileCb);
-
-    OTF2_DefReaderCallbacks_SetIoDirectoryCallback(def_callbacks, definition::LocalIoDirectoryCb);
-
-    OTF2_DefReaderCallbacks_SetIoHandleCallback(def_callbacks, definition::LocalIoHandleCb);
-
-    OTF2_DefReaderCallbacks_SetIoPreCreatedHandleStateCallback(def_callbacks,
-                                                               definition::LocalIoPreCreatedHandleStateCb);
-
-    OTF2_DefReaderCallbacks_SetCallpathParameterCallback(def_callbacks, definition::LocalCallpathParameterCb);
-
     for (auto location : locations)
     {
         if (successful_open_def_files)
         {
             OTF2_DefReader *def_reader = OTF2_Reader_GetDefReader(reader, location);
-            OTF2_Reader_RegisterDefCallbacks(reader, def_reader, def_callbacks, this);
+
+            ReaderLocationPair reader_location{*this, location};
+            OTF2_Reader_RegisterDefCallbacks(reader, def_reader, def_callbacks, &reader_location);
             if (def_reader)
             {
                 uint64_t def_reads = 0;
-                // FIXME Assume to save
-                // state is not good but
-                // put all in a pair
-                // pointer is also not
-                // great
+                // FIXME Assume to save state is not good
+                // but put all in a pair pointer is also not great
                 m_current_location = location;
                 OTF2_Reader_ReadAllLocalDefinitions(reader, def_reader, &def_reads);
                 OTF2_Reader_CloseDefReader(reader, def_reader);

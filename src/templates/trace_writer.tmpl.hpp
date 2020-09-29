@@ -46,11 +46,13 @@ class TraceWriter: public Otf2Handler {
      * Handle local definitions
      */
     @otf2 for def in defs|local_defs:
+    @otf2 if "MappingTable" == def.name or "ClockOffset" == def.name:
 
     virtual void
     handleLocal@@def.name@@(OTF2_LocationRef readLocation,
                             @@def.funcargs(leading_comma=False)@@) override;
 
+    @otf2 endif
     @otf2 endfor
 
     /*
@@ -76,10 +78,6 @@ class TraceWriter: public Otf2Handler {
 
     @otf2 for def in defs|global_defs:
     Filter<Global@@def.name@@Filter> m_global_@@def.name@@_filter;
-    @otf2 endfor
-
-    @otf2 for def in defs|local_defs:
-    Filter<Local@@def.name@@Filter> m_local_@@def.name@@_filter;
     @otf2 endfor
 
     @otf2 for event in events:

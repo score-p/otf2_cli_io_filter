@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include <vector>
 
 #include <otf2_handler.hpp>
@@ -7,6 +8,10 @@ extern "C"
 {
 #include <otf2/otf2.h>
 }
+
+class LocalReader;
+
+using ReaderLocationPair = std::pair<LocalReader &, size_t>;
 
 class LocalReader
 {

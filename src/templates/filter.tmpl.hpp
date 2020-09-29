@@ -34,6 +34,7 @@ using Global@@def.name@@Filter = FilterCallback<
  *  local definition filter
  */
 @otf2 for def in defs|local_defs:
+@otf2 if "MappingTable" == def.name or "ClockOffset" == def.name:
 
 using Local@@def.name@@Filter = FilterCallback<
 OTF2_LocationRef
@@ -47,6 +48,7 @@ OTF2_LocationRef
 @otf2 endfor
 >;
 
+@otf2   endif
 @otf2 endfor
 
 /*
@@ -87,9 +89,11 @@ public:
          * Local definition callbacks
          */
         @otf2 for def in defs|local_defs:
+        @otf2 if "MappingTable" == def.name or "ClockOffset" == def.name:
 
         Local@@def.name@@Filter local_@@def.lower@@_callback;
 
+        @otf2 endif
         @otf2 endfor
         /*
         * Event filter callbacks

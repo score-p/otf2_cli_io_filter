@@ -23,11 +23,13 @@ public:
      * Handle local definitions
      */
     @otf2 for def in defs|local_defs:
+    @otf2 if "MappingTable" == def.name or "ClockOffset" == def.name:
 
     virtual void
     handleLocal@@def.name@@(OTF2_LocationRef readLocation,
                             @@def.funcargs(leading_comma=False)@@) = 0;
 
+    @otf2 endif
     @otf2 endfor
 
     /*
