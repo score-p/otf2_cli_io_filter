@@ -33,6 +33,12 @@ class TraceWriter : public Otf2Handler
     TraceWriter(const std::string &path);
     virtual ~TraceWriter();
 
+    constexpr const char *
+    traceName() const
+    {
+        return "trace";
+    }
+
     /*
      * Handle global definitions
      */

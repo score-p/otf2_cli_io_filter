@@ -30,7 +30,7 @@ delete_archive(OTF2_Archive *archive)
 TraceWriter::TraceWriter(const std::string &path) : m_archive(nullptr, delete_archive)
 {
     auto *archive = OTF2_Archive_Open(path.c_str(),
-                                      "trace",
+                                      traceName(),
                                       OTF2_FILEMODE_WRITE,
                                       1024 * 1024 /* event chunk size */,
                                       4 * 1024 * 1024 /* def chunk size */,
