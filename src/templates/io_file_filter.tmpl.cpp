@@ -2,7 +2,6 @@
 #include <fstream>
 #include <stdexcept>
 
-#include <filter.hpp>
 #include <io_file_filter.hpp>
 
 extern "C" {
