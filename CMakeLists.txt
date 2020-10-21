@@ -7,85 +7,56 @@ project(otf2_filter_io)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 include(ClangFormat)
+include(Otf2Generate)
 
 option(BUILD_TESTING "" OFF)
 
 find_package(OpenMP)
+
 if(OpenMP_CXX_FOUND)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
 find_package(OTF2 REQUIRED)
 
-macro(generate_otf2 target_name infile outfile)
-add_custom_command(
-    OUTPUT ${outfile}
-    COMMAND otf2-template ${infile} ${outfile}
-    )
-    add_custom_target(${target_name} DEPENDS ${outfile})
-    endmacro()
+SET(TEMPLATE_HPP_FILES
+"global_callbacks.tmpl.hpp"
+"local_callbacks.tmpl.hpp"
+"otf2_handler.tmpl.hpp"
+"trace_writer.tmpl.hpp"
+)
 
-    SET(TEMPLATE_HPP_FILES
-    "global_callbacks.tmpl.hpp"
-    "local_callbacks.tmpl.hpp"
-    "otf2_handler.tmpl.hpp"
-    "trace_writer.tmpl.hpp"
-    )
+SET(TEMPLATE_CPP_FILES
+"global_callbacks.tmpl.cpp"
+"local_callbacks.tmpl.cpp"
+"trace_writer.tmpl.cpp"
+"trace_reader.tmpl.cpp"
+"local_reader.tmpl.cpp"
+)
 
-    SET(TEMPLATE_CPP_FILES
-    "global_callbacks.tmpl.cpp"
-    "local_callbacks.tmpl.cpp"
-    "trace_writer.tmpl.cpp"
-    "trace_reader.tmpl.cpp"
-    "local_reader.tmpl.cpp"
-    )
+generate_otf2_hpp("src/templates"
+                  "src/include"
+                  "${TEMPLATE_HPP_FILES}")
 
-    SET(TEST_TEMPLATE_HPP_FILES
-    "itest_handler.tmpl.hpp"
-    )
+generate_otf2_cpp("src/templates"
+                  "src"
+                  "${TEMPLATE_CPP_FILES}")
 
-    add_custom_target(generate)
+generate_otf2_hpp("tests/templates"
+                  "tests"
+                  "itest_handler.tmpl.hpp")
 
-    foreach(infilename ${TEMPLATE_HPP_FILES})
-    string(REGEX REPLACE ".tmpl.hpp\$" ".hpp" outfilename ${infilename})
-    set(infile_path ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/${infilename})
-    set(outfile_path ${CMAKE_CURRENT_SOURCE_DIR}/src/include/${outfilename})
+generate_otf2_hpp("src/templates"
+                  "src/filter/include"
+                  "filter.tmpl.hpp")
 
-    generate_otf2(${outfilename} ${infile_path} ${outfile_path})
-    add_dependencies(generate ${outfilename})
-    endforeach()
+generate_otf2_cpp("src/templates"
+                  "src/filter"
+                  "io_file_filter.tmpl.cpp")
 
-    generate_otf2("filter.hpp"
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/filter.tmpl.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/filter/include/filter.hpp)
-    add_dependencies(generate "filter.hpp")
+add_subdirectory(src)
 
-    generate_otf2("io_file_filter.cpp"
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/io_file_filter.tmpl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/filter/io_file_filter.cpp)
-    add_dependencies(generate "io_file_filter.cpp")
-
-    foreach(infilename ${TEMPLATE_CPP_FILES})
-    string(REGEX REPLACE ".tmpl.cpp\$" ".cpp" outfilename ${infilename})
-    set(infile_path ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/${infilename})
-    set(outfile_path ${CMAKE_CURRENT_SOURCE_DIR}/src/${outfilename})
-
-    generate_otf2(${outfilename} ${infile_path} ${outfile_path})
-    add_dependencies(generate ${outfilename})
-    endforeach()
-
-    foreach(infilename ${TEST_TEMPLATE_HPP_FILES})
-    string(REGEX REPLACE ".tmpl.hpp\$" ".hpp" outfilename ${infilename})
-    set(infile_path ${CMAKE_CURRENT_SOURCE_DIR}/tests/templates/${infilename})
-    set(outfile_path ${CMAKE_CURRENT_SOURCE_DIR}/tests/${outfilename})
-
-    generate_otf2(${outfilename} ${infile_path} ${outfile_path})
-    add_dependencies(generate ${outfilename})
-    endforeach()
-
-    add_subdirectory(src)
-
-    if(BUILD_TESTING)
-        include(CTest)
-        add_subdirectory(tests)
-    endif()
+if(BUILD_TESTING)
+    include(CTest)
+    add_subdirectory(tests)
+endif()
