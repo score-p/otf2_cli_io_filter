@@ -36,6 +36,11 @@ and the single `foo.cfg` file.
 ~> make generate
 ```
 
+### Clean generated files
+```sh
+~> make clean-generated
+```
+
 ### Format source code
 ```sh
 ~> make clangformat
