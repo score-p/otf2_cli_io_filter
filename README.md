@@ -45,13 +45,13 @@ and the single `foo.cfg` file.
 ```sh
 ~> make clangformat
 ```
+
 ### Tests
 ```sh
 ~> make test
 ```
 
 ## Todos
-* `make clean` deletes generate files, it is better to create a new command for that
 * log the filtered files
 
 ## Known issues
