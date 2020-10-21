@@ -10,7 +10,6 @@ extern "C"
 class ITestHandler : public Otf2Handler
 {
   public:
-
     /*
      * Handle global definitions
      */

@@ -1,4 +1,5 @@
 set(OTF2_FILTER_FMT_SRC
+    ${PROJECT_SOURCE_DIR}/tests/itest_handler.hpp
     include/global_callbacks.hpp
     include/local_callbacks.hpp
     include/local_reader.hpp
